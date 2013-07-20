@@ -1,0 +1,27 @@
+{
+  "name": "cavalry",
+  "version": "0.0.0",
+  "description": "Basically Fleet without dnode.",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha -R spec --compilers coffee:coffee-script"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidbanham/cavalry.git"
+  },
+  "keywords": [
+    "devops",
+    "fleet",
+    "paas"
+  ],
+  "author": "david@banham.id.au",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/davidbanham/cavalry/issues"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.12.0"
+  }
+}
