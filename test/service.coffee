@@ -1,11 +1,20 @@
 assert = require 'assert'
 fs = require 'fs'
 path = require 'path'
+rimraf = require 'rimraf'
 testpath = path.resolve '.', 'testrepos'
 deploydir = path.join testpath, 'deploy'
 drone = require('../lib/runner.coffee')
   deploydir: deploydir
 describe 'drone', ->
+  before (done) ->
+    fs.mkdir testpath, ->
+    fs.mkdir deploydir, ->
+    fs.symlink path.join(testpath, "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), path.join(testpath, "deploy", "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), ->
+      done()
+  after (done) ->
+    rimraf deploydir, ->
+      done()
   it 'should have a processes object', ->
     assert drone.processes
   it 'should have a spawn method', ->
@@ -22,13 +31,21 @@ describe 'drone', ->
       assert proc.repo, "test1"
       assert proc.commit, '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       setTimeout ->
-        touchedFile = path.join testpath, proc.repo+'.'+proc.commit, rand
+        touchedFile = path.join deploydir, proc.repo+'.'+proc.commit, rand
         assert fs.existsSync touchedFile
         fs.unlinkSync touchedFile
         done()
-      , 1
+      , 5
 
 describe 'process', ->
+  before (done) ->
+    fs.mkdir testpath, ->
+    fs.mkdir deploydir, ->
+    fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), ->
+      done()
+  after (done) ->
+    rimraf deploydir, ->
+      done()
 
   it 'should pass back stdout properly', (done) ->
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
