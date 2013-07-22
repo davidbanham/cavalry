@@ -1,6 +1,6 @@
 path = require 'path'
 util = require 'util'
-EventEmitter = require('events').EventEmitter
+Stream = require('stream').Stream
 spawn = require('child_process').spawn
 
 Drone = (opts={}) ->
@@ -9,7 +9,7 @@ Drone = (opts={}) ->
   base = opts.basedir or process.cwd()
   @deploydir = path.resolve(opts.deploydir or path.join(base, 'deploy'))
 
-Drone.prototype = new EventEmitter
+Drone.prototype = new Stream
 
 Drone.prototype.spawn = (opts, cb) ->
   id = Math.floor(Math.random() * (1 << 24)).toString(16)
@@ -41,6 +41,14 @@ Drone.prototype.spawn = (opts, cb) ->
 
     innerProcess.stderr.on "data", (buf) =>
       @emit "stderr", buf,
+        drone: @droneId
+        id: id
+        repo: repo
+        commit: commit
+
+    innerProcess.on "error", (err) ->
+      console.log "error", err
+      @emit "error", err,
         drone: @droneId
         id: id
         repo: repo

@@ -2,8 +2,9 @@ assert = require 'assert'
 fs = require 'fs'
 path = require 'path'
 testpath = path.resolve '.', 'testrepos'
-drone = require('../index.coffee')
-  deploydir: testpath
+deploydir = path.join testpath, 'deploy'
+drone = require('../lib/runner.coffee')
+  deploydir: deploydir
 describe 'drone', ->
   it 'should have a processes object', ->
     assert drone.processes
