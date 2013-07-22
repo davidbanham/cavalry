@@ -22,6 +22,7 @@ Drone.prototype.spawn = (opts, cb) ->
     innerProcess = spawn cmd, args,
       cwd: dir
     @processes[id] =
+      id: id
       status: "running"
       repo: repo
       commit: commit
@@ -70,6 +71,23 @@ Drone.prototype.spawn = (opts, cb) ->
       cwd: dir
   respawn()
   cb @processes[id] if cb?
+
+Drone.prototype.stop = (ids) ->
+  ids = [ ids ] if !Array.isArray(ids)
+  for id in ids
+    proc = @processes[id]
+    return false if !proc?
+    @emit "stop", @processes[id]
+    proc.status = "stopped"
+    proc.process.kill()
+
+Drone.prototype.restart = (ids) ->
+  ids = [ ids ] if !Array.isArray(ids)
+  for id in ids
+    proc = @processes[id]
+    return false if !proc?
+    @emit "restart", @processes[id]
+    proc.process.kill()
 
 module.exports = (opts) ->
   new Drone opts
