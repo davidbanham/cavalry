@@ -8,6 +8,7 @@ Checkin = (innerOpts={})->
     path: "/checkin"
     auth: "#{runner.droneId}:#{process.env.MASTERPASS or 'testingpass'}"
     agent: false
+    method: "POST"
     headers:
       Connection: "keep-alive"
   @innerOpts = innerOpts
