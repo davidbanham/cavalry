@@ -21,8 +21,11 @@
     "url": "https://github.com/davidbanham/cavalry/issues"
   },
   "devDependencies": {
-    "coffee-script": "~1.6.3",
     "mocha": "~1.12.0",
-    "rimraf": "~2.2.1"
+    "rimraf": "~2.2.1",
+    "request": "~2.22.0"
+  },
+  "dependencies": {
+    "coffee-script": "~1.6.3"
   }
 }
