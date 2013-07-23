@@ -15,6 +15,7 @@ describe "webserver", ->
   it 'should return a 401 on the wrong password', (done) ->
     request.get "http://localhost:3000", (err, res, body) ->
       done assert.equal res.statusCode, 401
+    .auth "user", "wrongpass"
   it 'should return a 200 on the right password', (done) ->
     request.get "http://localhost:3000/health", (err, res, body) ->
       done assert.equal res.statusCode, 200
