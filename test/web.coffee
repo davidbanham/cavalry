@@ -24,9 +24,9 @@ describe "webserver", ->
     request.get "http://localhost:3000", (err, res, body) ->
       done assert.equal res.statusCode, 404
     .auth "user", "testingpass"
-  it 'should return an empty object on ps', (done) ->
+  it 'should return an object on ps', (done) ->
     request.get "http://localhost:3000/ps", (err, res, body) =>
       assert.equal res.statusCode, 200
-      assert.equal body, "{}"
+      assert.equal typeof JSON.parse(body), "object"
       done()
     .auth "user", "testingpass"

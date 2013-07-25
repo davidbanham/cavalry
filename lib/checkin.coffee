@@ -1,5 +1,6 @@
 http = require 'http'
 runner = require('../lib/runner')()
+util = require('../lib/util')
 
 Checkin = (innerOpts={})->
   @opts =
@@ -13,11 +14,17 @@ Checkin = (innerOpts={})->
       Connection: "keep-alive"
   @innerOpts = innerOpts
   @shouldRetryCheckin = true
+  return this
 
 Checkin.prototype.setRetry = (state) ->
   @shouldRetryCheckin = state
 
 Checkin.prototype.startCheckin = ->
+  checkinMessage = ->
+    JSON.stringify
+      id: runner.droneId.toString()
+      processes: util.clone runner.processes
+
   longpoll = http.request @opts, (res) ->
   longpoll.on 'error', (e) =>
     console.log "Checkin error: #{e.message}" unless @innerOpts.silent
@@ -27,9 +34,9 @@ Checkin.prototype.startCheckin = ->
   longpoll.on 'end', =>
     console.log "Checkin connection ended" unless @innerOpts.silent
     @startCheckin() if @shouldRetryCheckin
-  longpoll.write runner.droneId.toString()
+  longpoll.write checkinMessage()
   setInterval ->
-    longpoll.write runner.droneId.toString()
+    longpoll.write checkinMessage()
   , 500
 
 module.exports = (opts) ->

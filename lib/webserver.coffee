@@ -4,6 +4,7 @@ url = require 'url'
 server = http.createServer()
 gitter = require('../lib/gitter')()
 runner = require('../lib/runner')()
+util = require ('../lib/util')
 
 SECRET = process.env.SECRET or "testingpass"
 
@@ -29,7 +30,7 @@ server.on 'request', (req, res) ->
       res.end "ok"
     when "/ps"
       res.setHeader "Content-Type", "application/json"
-      ps = JSON.parse JSON.stringify runner.processes
+      ps = util.clone runner.processes
       delete proc.process for _, proc of ps
       res.write JSON.stringify ps
       res.end()
