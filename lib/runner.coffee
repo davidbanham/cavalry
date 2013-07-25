@@ -6,8 +6,9 @@ spawn = require('child_process').spawn
 Drone = (opts={}) ->
   @processes = {}
   @droneId = 'someId'
-  base = opts.basedir or process.cwd()
-  @deploydir = path.resolve(opts.deploydir or path.join(base, 'deploy'))
+  base = process.env.BASEDIR or process.cwd()
+  @deploydir = path.resolve(process.env.DEPLOYDIR or path.join(base, 'deploy'))
+  return this
 
 Drone.prototype = new Stream
 
@@ -96,6 +97,5 @@ Drone.prototype.restart = (ids) ->
     return false if !proc?
     @emit "restart", @processes[id]
     proc.process.kill()
-
-module.exports = (opts) ->
-  new Drone opts
+drone = new Drone()
+module.exports = drone

@@ -3,7 +3,7 @@ qs = require "querystring"
 url = require 'url'
 server = http.createServer()
 gitter = require('../lib/gitter')()
-runner = require('../lib/runner')()
+runner = require('../lib/runner')
 util = require ('../lib/util')
 
 SECRET = process.env.SECRET or "testingpass"

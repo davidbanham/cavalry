@@ -5,7 +5,7 @@ rimraf = require 'rimraf'
 testpath = path.resolve '.', 'testrepos'
 deploydir = path.join testpath, 'deploy'
 drone = require('../lib/runner.coffee')
-  deploydir: deploydir
+drone.deploydir = deploydir
 describe 'drone', ->
   before (done) ->
     fs.mkdir testpath, ->

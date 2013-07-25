@@ -1,5 +1,5 @@
 http = require 'http'
-runner = require('../lib/runner')()
+runner = require('../lib/runner')
 util = require('../lib/util')
 
 Checkin = (innerOpts={})->
