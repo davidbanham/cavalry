@@ -41,7 +41,8 @@ describe 'process', ->
   before (done) ->
     fs.mkdir testpath, ->
     fs.mkdir deploydir, ->
-    fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), ->
+    fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), (err) ->
+      assert.equal err, null, "Error creating test directory #{err}"
       done()
   after (done) ->
     rimraf deploydir, ->
