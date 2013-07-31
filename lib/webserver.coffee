@@ -54,7 +54,9 @@ server.on 'request', (req, res) ->
         res.end
     when "/spawn"
       getJSON req, (opts) ->
-        runner.spawn opts
+        runner.spawn opts, (processes)->
+          res.write processes
+          res.end()
     when "/monitor"
       res.writeHead 200
       res.write "Monitoring #{runner.droneId}\r\n"
