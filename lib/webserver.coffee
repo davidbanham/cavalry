@@ -51,7 +51,7 @@ server.on 'request', (req, res) ->
     when "/restart"
       getJSON req, (ids) ->
         runner.restart ids
-        req.end
+        res.end
     when "/spawn"
       getJSON req, (opts) ->
         runner.spawn opts
