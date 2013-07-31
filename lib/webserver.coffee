@@ -35,13 +35,15 @@ server.on 'request', (req, res) ->
       res.write JSON.stringify ps
       res.end()
     when "/fetch"
-      gitter.fetch parsed.query.repo, parsed.query.url, (err) ->
-        res.writeHead 500 if err?
-        res.end err or ""
+      getJSON req, (repo) ->
+        gitter.fetch repo.name, repo.url, (err) ->
+          res.writeHead 500 if err?
+          res.end err or ""
     when "/deploy"
-      gitter.deploy parsed.query, (err, action) ->
-        res.writeHead 500 if err?
-        res.end "#{err or ''}, #{action}"
+      getJSON req, (opts) ->
+        gitter.deploy opts, (err, action) ->
+          res.writeHead 500 if err?
+          res.end "#{err or ''}, #{action}"
     when "/stop"
       getJSON req, (ids) ->
         runner.stop ids
