@@ -4,7 +4,10 @@ url = require 'url'
 server = http.createServer()
 gitter = require('../lib/gitter')()
 runner = require('../lib/runner')
+porter = require('../lib/porter')
 util = require ('../lib/util')
+
+porter.neverTwice = true # Don't return the same port twice
 
 SECRET = process.env.SECRET or "testingpass"
 
@@ -57,6 +60,12 @@ server.on 'request', (req, res) ->
         runner.spawn opts, (processes)->
           res.write processes
           res.end()
+    when "/port"
+      porter.getPort (err, port) ->
+        res.setHeader "Content-Type", "application/json"
+        res.write JSON.stringify
+          port: port
+        res.end()
     when "/monitor"
       res.writeHead 200
       res.write "Monitoring #{runner.droneId}\r\n"

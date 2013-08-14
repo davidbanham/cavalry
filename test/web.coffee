@@ -30,3 +30,10 @@ describe "webserver", ->
       assert.equal typeof JSON.parse(body), "object"
       done()
     .auth "user", "testingpass"
+  it 'should return a port', (done) ->
+    require("../lib/porter.coffee").basePort = 8000
+    request.get "http://localhost:3000/port", (err, res, body) ->
+      assert.deepEqual JSON.parse(body),
+        port: 8001
+      done()
+    .auth "user", "testingpass"
