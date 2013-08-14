@@ -50,7 +50,7 @@ server.on 'request', (req, res) ->
     when "/stop"
       getJSON req, (ids) ->
         runner.stop ids
-        req.end
+        res.end
     when "/restart"
       getJSON req, (ids) ->
         runner.restart ids
