@@ -3,7 +3,7 @@ http = require 'http'
 porter = require '../lib/porter.coffee'
 
 describe 'porter', ->
-  describe 'with running servers', ->
+  describe 'with running servers', (done) ->
     servers = []
     before ->
       range = [8000...8005]
