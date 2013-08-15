@@ -74,6 +74,7 @@ describe 'process', ->
     drone.on 'stdout', (buf) ->
       str = buf.toString().replace(/(\r\n|\n|\r)/gm,"") #Strip the line feed.
       count++ if str is rand
+      drone.removeAllListeners() if count is 2
       done() if count is 2
       drone.stop pid if count is 2
 
