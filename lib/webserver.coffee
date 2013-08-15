@@ -65,15 +65,15 @@ server.on 'request', (req, res) ->
         unless opts.once
           res.writeHead 400
           return res.end()
-        runner.spawn opts, (process) ->
+        runner.spawn opts, (proc) ->
           output =
             stdout: []
             stderr: []
-          runner.processes[process].process.on 'stdout', (buf) ->
+          proc.process.stdout.on 'data', (buf) ->
             output.stdout.push buf.toString()
-          runner.processes[process].process.on 'stderr', (buf) ->
+          proc.process.stderr.on 'data', (buf) ->
             output.stderr.push buf.toString()
-          runner.processes[process].process.on 'exit', (buf) ->
+          proc.process.on 'exit', (buf) ->
             res.end JSON.stringify output
     when "/port"
       porter.getPort (err, port) ->

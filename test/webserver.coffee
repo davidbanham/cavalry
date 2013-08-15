@@ -1,6 +1,13 @@
 assert = require "assert"
 http = require 'http'
 request = require 'request'
+fs = require 'fs'
+path = require 'path'
+rimraf = require 'rimraf'
+testpath = path.resolve '.', 'testrepos'
+deploydir = path.join testpath, 'deploy'
+runner = require "../lib/runner.coffee"
+runner.deploydir = deploydir
 server = require "../lib/webserver.coffee"
 describe "webserver", ->
   before (done) ->
@@ -50,11 +57,13 @@ describe "webserver", ->
           pass: "testingpass"
       , (err, res, body) ->
         done assert.equal res.statusCode, 400
-    it.only 'should come back once the process is finished', (done) ->
+    it 'should come back once the process is finished', (done) ->
+      fs.mkdir deploydir, ->
+      fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), ->
       opts =
         repo: 'test1'
         commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
-        command: ['touch', 'ohai']
+        command: ['echo', 'ohai']
         once: true
       request
         url: "http://localhost:3000/exec"
@@ -64,4 +73,5 @@ describe "webserver", ->
           user: "user"
           pass: "testingpass"
       , (err, res, body) ->
-        done assert.equal JSON.parse(body).stdout[0], 'ohai'
+        rimraf deploydir, ->
+          done assert.equal body.stdout[0], 'ohai\n'
