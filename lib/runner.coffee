@@ -48,7 +48,7 @@ Drone.prototype.spawn = (opts, cb) ->
         commit: commit
 
     innerProcess.on "error", (err) ->
-      console.log "error", err
+      console.error "error", err
       @emit "error", err,
         drone: @droneId
         id: id
