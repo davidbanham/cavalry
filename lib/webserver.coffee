@@ -60,6 +60,21 @@ server.on 'request', (req, res) ->
         runner.spawn opts, (processes)->
           res.write processes
           res.end()
+    when "/exec"
+      getJSON req, (opts) ->
+        unless opts.once
+          res.writeHead 400
+          return res.end()
+        runner.spawn opts, (process) ->
+          output =
+            stdout: []
+            stderr: []
+          runner.processes[process].process.on 'stdout', (buf) ->
+            output.stdout.push buf.toString()
+          runner.processes[process].process.on 'stderr', (buf) ->
+            output.stderr.push buf.toString()
+          runner.processes[process].process.on 'exit', (buf) ->
+            res.end JSON.stringify output
     when "/port"
       porter.getPort (err, port) ->
         res.setHeader "Content-Type", "application/json"

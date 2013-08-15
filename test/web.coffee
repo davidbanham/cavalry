@@ -37,3 +37,31 @@ describe "webserver", ->
         port: 8001
       done()
     .auth "user", "testingpass"
+  describe 'exec', ->
+    it 'should reject if opts.once isnt set', (done) ->
+      opts =
+        repo: 'test1'
+      request
+        url: "http://localhost:3000/exec"
+        method: "post"
+        json: opts
+        auth:
+          user: "user"
+          pass: "testingpass"
+      , (err, res, body) ->
+        done assert.equal res.statusCode, 400
+    it.only 'should come back once the process is finished', (done) ->
+      opts =
+        repo: 'test1'
+        commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
+        command: ['touch', 'ohai']
+        once: true
+      request
+        url: "http://localhost:3000/exec"
+        method: "post"
+        json: opts
+        auth:
+          user: "user"
+          pass: "testingpass"
+      , (err, res, body) ->
+        done assert.equal JSON.parse(body).stdout[0], 'ohai'
