@@ -33,6 +33,10 @@ Checkin.prototype.startCheckin = ->
     clearInterval @interval
     console.log "Checkin connection closed" unless @innerOpts.silent
     @startCheckin() if @shouldRetryCheckin
+  ws.on 'error', (err) =>
+    clearInterval @interval
+    console.log "Checkin connection errored with", err unless @innerOpts.silent
+    @startCheckin() if @shouldRetryCheckin
 
 module.exports = (opts) ->
   new Checkin opts
