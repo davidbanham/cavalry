@@ -1,6 +1,7 @@
 assert = require 'assert'
+fs = require 'fs'
+path = require 'path'
 router = require '../lib/router.coffee'
-router.pidpath = './'
 describe 'routes', ->
   routingTable =
     repo1:
