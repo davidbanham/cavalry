@@ -48,7 +48,42 @@ Router = ->
     output.on 'close', ->
       cb null
 
+  @reload = (cb) =>
+    #kill is a misnomer, this instructs nginx to re-read it's configuration and gracefully retire it's workers. http://nginx.org/en/docs/control.html
+    @nginx.kill 'SIGHUP'
+    @emit 'reloading'
+    cb()
+  @checkStale = (cb) =>
+    fs.readFile path.join(@pidpath, 'nginx.pid'), (err, buf) =>
+      if err?
+        return cb()
+      else
+        stalePid = parseInt(buf.toString())
+        info = spawn 'ps', ['-p', stalePid, '-o', 'comm'] #Check that it's actually an nginx process and not something else
+        info.stdout.once 'data', (data) ->
+          if data.toString().indexOf('nginx') > -1
+            process.kill stalePid
+          cb()
+  @start = =>
+    @checkStale =>
+      @writeFile {}, (err) =>
+        @nginx = spawn "nginx", ['-c', path.resolve(nginxPath, 'nginx.conf')]
+        @emit 'ready'
+        norespawn = false
+        @on 'norespawn', ->
+          norespawn = true
+        @nginx.on 'exit', (code, signal) ->
+          console.log "exit caught", code, signal
+        @nginx.once 'exit', (code, signal) =>
+          @start() unless norespawn
+  @start()
+  @nginx = null
+  @takedown = =>
+    @emit 'norespawn'
+    @nginx.kill()
   return this
+
+Router.prototype = new Stream
 
 router = new Router
 module.exports = router

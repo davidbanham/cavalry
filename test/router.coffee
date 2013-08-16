@@ -3,6 +3,24 @@ fs = require 'fs'
 path = require 'path'
 router = require '../lib/router.coffee'
 describe 'routes', ->
+  before (done) ->
+    if router.nginx.stdout?
+      done()
+    else
+      router.once 'ready', ->
+        #router.nginx.stdout.on 'data', (buf) ->
+        #  console.log buf.toString()
+        #router.nginx.stderr.on 'data', (buf) ->
+        #  console.log buf.toString()
+        #router.nginx.on 'exit', (code, signal) ->
+        #  console.log "nginx exited", code, signal
+        #router.nginx.on 'error', (err) ->
+        #  console.log "nginx err", err
+        done()
+  after (done) ->
+    #router.takedown()
+    #router.nginx.once 'exit', ->
+    done()
   routingTable =
     repo1:
       domain: 'repo1.example.com'
@@ -64,3 +82,12 @@ describe 'routes', ->
     router.writeFile routingTable, (err) ->
       assert.equal null, err
       done()
+  it "Should spawn an nginx process on start", (done) ->
+    assert router.nginx.stdout?
+    done()
+  it "Should write an nginx pidfile", (done) ->
+    setTimeout ->
+      assert fs.existsSync path.join router.pidpath, "nginx.pid"
+      assert.equal fs.readFileSync(path.join router.pidpath, "nginx.pid").toString(), router.nginx.pid
+      done()
+    , 50
