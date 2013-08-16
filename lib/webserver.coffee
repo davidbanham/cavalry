@@ -5,6 +5,7 @@ server = http.createServer()
 gitter = require('../lib/gitter')()
 runner = require('../lib/runner')
 porter = require('../lib/porter')
+router = require('../lib/router')
 util = require ('../lib/util')
 
 porter.neverTwice = true # Don't return the same port twice
@@ -75,6 +76,12 @@ server.on 'request', (req, res) ->
             output.stderr.push buf.toString()
           proc.process.on 'exit', (buf) ->
             res.end JSON.stringify output
+    when "/routingTable"
+      getJSON req, (table) ->
+        router.writeFile table, (err) ->
+          throw new Error err if err?
+          router.reload ->
+            res.end()
     when "/port"
       porter.getPort (err, port) ->
         res.setHeader "Content-Type", "application/json"

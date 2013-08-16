@@ -75,3 +75,25 @@ describe "webserver", ->
       , (err, res, body) ->
         rimraf deploydir, ->
           done assert.equal body.stdout[0], 'ohai\n'
+  it "Should update the config file and restart nginx when a new routing table is recieved", (done) ->
+    request
+      url: "http://localhost:3000/routingTable"
+      method: "post"
+      json:
+        test1:
+          routes: [
+            {host: "testslave1.example.com", port: 8000}
+            {host: "testslave2.example.com", port: 8000}
+          ]
+        test2:
+          routes: [
+            {host: "testslave1.example.com", port: 8001}
+            {host: "testslave2.example.com", port: 8001}
+          ]
+      auth:
+        user: "user"
+        pass: "testingpass"
+    , (err, res, body) ->
+      assert.equal res.statusCode, 200
+      assert.equal err, null
+      done()
