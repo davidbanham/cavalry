@@ -28,18 +28,18 @@ Gitter.prototype.fetch = (repo, url, cb) ->
         cb err
 
 Gitter.prototype.deploy = (opts, cb) ->
-  repo = opts.repo
+  name = opts.name
   commit = opts.commit
 
-  checkoutdir = path.join @deploydir, "#{repo}.#{commit}"
-  targetrepo = path.join @repodir, repo
+  checkoutdir = path.join @deploydir, "#{name}.#{commit}"
+  targetrepo = path.join @repodir, name
   fs.exists checkoutdir, (exists) =>
     return cb null, false if exists
     exec "git clone #{targetrepo} #{checkoutdir}", (err) =>
       return cb err if err?
       exec "git checkout #{commit}", {cwd: checkoutdir}, (err) =>
         @emit 'deploy',
-          repo: repo
+          repo: name
           commit: commit
           cwd: checkoutdir
         cb err, true

@@ -42,7 +42,8 @@ server.on 'request', (req, res) ->
       getJSON req, (repo) ->
         gitter.fetch repo.name, repo.url, (err) ->
           res.writeHead 500 if err?
-          res.end err or ""
+          return res.end err.toString() if err?
+          res.end()
     when "/deploy"
       getJSON req, (opts) ->
         gitter.deploy opts, (err, action) ->

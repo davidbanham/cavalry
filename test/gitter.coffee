@@ -23,7 +23,7 @@ describe "gitter", ->
       done err
   it 'should deploy a repo without error', (done) ->
     gitter.deploy
-      repo: 'test1'
+      name: 'test1'
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
     , (err, tookaction) ->
       assert tookaction
