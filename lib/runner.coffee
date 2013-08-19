@@ -21,8 +21,12 @@ Drone.prototype.spawn = (opts, cb) ->
   cmd = opts.command[0]
   args = opts.command.slice 1
   respawn = =>
+    env = {}
+    env[k] = v for k,v of process.env
+    env[k] = v for k,v of opts.env
     innerProcess = spawn cmd, args,
       cwd: dir
+      env: env
     @processes[id] =
       id: id
       status: "running"
