@@ -28,6 +28,7 @@ Drone.prototype.spawn = (opts, cb) ->
       repo: repo
       commit: commit
       command: opts.command
+      opts: opts
       cwd: dir
       process: innerProcess
       respawn: respawn
