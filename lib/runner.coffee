@@ -2,6 +2,7 @@ path = require 'path'
 util = require 'util'
 Stream = require('stream').Stream
 spawn = require('child_process').spawn
+gitter = require('../lib/gitter.coffee')()
 
 Drone = (opts={}) ->
   @processes = {}
@@ -49,12 +50,28 @@ Drone.prototype.spawn = (opts, cb) ->
         commit: commit
 
     innerProcess.on "error", (err) ->
+      #If it's an ENOENT, try fetching the repo from the master
       console.error "error", err
-      @emit "error", err,
-        drone: @droneId
-        id: id
-        repo: repo
-        commit: commit
+      if err.code is "ENOENT"
+        outerErr = err
+        master =
+          hostname: process.env.MASTERHOST or "localhost"
+          port: process.env.MASTERGITPORT or 4001
+          secret: process.env.MASTERPASS or 'testingpass'
+        gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
+          gitter.deploy {repo: repo, commit: commit}, (err) =>
+            #@emit "error", outerErr,
+            #  drone: @droneId
+            #  id: id
+            #  repo: repo
+            #  commit: commit
+            respawn()
+      else
+        #@emit "error", err,
+        #  drone: @droneId
+        #  id: id
+        #  repo: repo
+        #  commit: commit
 
     innerProcess.once "exit", (code, signal) =>
       proc = @processes[id]
