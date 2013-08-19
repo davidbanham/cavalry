@@ -59,7 +59,7 @@ server.on 'request', (req, res) ->
     when "/spawn"
       getJSON req, (opts) ->
         runner.spawn opts, (processes)->
-          res.write processes
+          res.write JSON.stringify util.clone processes
           res.end()
     when "/exec"
       getJSON req, (opts) ->
