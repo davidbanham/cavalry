@@ -27,6 +27,7 @@ describe "gitter", ->
       name: 'test1'
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
     , (err, tookaction) ->
+      assert.equal null, err
       assert tookaction
       done err
 
