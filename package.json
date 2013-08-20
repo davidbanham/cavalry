@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Basically Fleet without dnode.",
   "main": "index.coffee",
+  "bin": "./index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha -R spec --compilers coffee:coffee-script"
   },
