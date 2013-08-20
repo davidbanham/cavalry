@@ -18,9 +18,9 @@ describe 'routes', ->
         #  console.log "nginx err", err
         done()
   after (done) ->
-    #router.takedown()
-    #router.nginx.once 'exit', ->
-    done()
+    router.takedown()
+    router.nginx.once 'exit', ->
+      done()
   routingTable =
     repo1:
       domain: 'repo1.example.com'
