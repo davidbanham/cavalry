@@ -19,6 +19,7 @@ describe 'routes', ->
         done()
   after (done) ->
     router.takedown()
+    return done() if process.env.TRAVIS
     router.nginx.once 'exit', ->
       done()
   routingTable =
