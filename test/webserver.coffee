@@ -75,7 +75,7 @@ describe "webserver", ->
       , (err, res, body) ->
         rimraf deploydir, ->
           done assert.equal body.stdout[0], 'ohai\n'
-  it "Should update the config file and restart nginx when a new routing table is recieved", (done) ->
+  it "Should update the config file when a new routing table is recieved", (done) ->
     request
       url: "http://localhost:3000/routingTable"
       method: "post"
