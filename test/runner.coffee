@@ -41,6 +41,7 @@ describe 'process', ->
   before (done) ->
     fs.mkdir testpath, ->
     fs.mkdir deploydir, ->
+    return done() if process.env.TRAVIS
     fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), (err) ->
       assert.equal err, null, "Error creating test directory #{err}"
       done()
@@ -49,6 +50,7 @@ describe 'process', ->
       done()
 
   it 'should pass back stdout properly', (done) ->
+    return done() if process.env.TRAVIS
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
     opts =
       repo: 'test1'
@@ -61,6 +63,7 @@ describe 'process', ->
       done() if str is rand
 
   it 'should respawn the process when it dies', (done) ->
+    return done() if process.env.TRAVIS
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
     opts =
       repo: 'test1'
@@ -79,6 +82,7 @@ describe 'process', ->
       drone.stop pid if count is 2
 
   it 'should stop the process when told', (done) ->
+    return done() if process.env.TRAVIS
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
     opts =
       repo: 'test1'
@@ -93,6 +97,7 @@ describe 'process', ->
         assert.notEqual proc.id, info.id
 
   it 'should stop a range of ids', (done) ->
+    return done() if process.env.TRAVIS
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
     rand2 = Math.floor(Math.random() * (1 << 24)).toString(16)
     opts =
@@ -118,6 +123,7 @@ describe 'process', ->
       drone.on 'stdout', (buf, info) ->
         assert.notEqual proc.id, info.id
   it 'should restart the process when told', (done) ->
+    return done() if process.env.TRAVIS
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
     opts =
       repo: 'test1'
