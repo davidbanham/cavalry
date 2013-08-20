@@ -79,6 +79,20 @@ Router = ->
   @takedown = =>
     @emit 'norespawn'
     @nginx.kill()
+  @nginxlogrotate = =>
+    files = ['error.log', 'access.log']
+    for file in files
+      loc = path.join(__dirname, 'nginx', file)
+      do (loc) =>
+        fs.stat loc, (err, stat) =>
+          if stat.size > process.env.MAXLOGFILESIZE or 524288000 #500MB
+            fs.rename loc, "#{loc}.1", (err) =>
+              return console.error err if err?
+              @nginx.kill 'USR1' #USR1 causes nginx to reopen its logfiles
+
+  setInterval =>
+    @nginxlogrotate()
+  , 60 * 1000
   return this
 
 Router.prototype = new Stream
