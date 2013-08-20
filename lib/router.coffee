@@ -72,8 +72,6 @@ Router = ->
         norespawn = false
         @on 'norespawn', ->
           norespawn = true
-        @nginx.on 'exit', (code, signal) ->
-          console.log "exit caught", code, signal
         @nginx.once 'exit', (code, signal) =>
           @start() unless norespawn
   @start()
