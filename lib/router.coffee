@@ -4,10 +4,10 @@ os = require 'os'
 fs = require 'fs'
 spawn = require('child_process').spawn
 Stream = require('stream').Stream
-nginxPath = path.resolve 'nginx'
+nginxPath = path.join process.cwd(), 'nginx'
 
 Router = ->
-  @pidpath = path.resolve './pids'
+  @pidpath = path.join process.cwd(), 'pids'
   fs.mkdir @pidpath, ->
   @buildOpts = (routingTable) =>
     options =
@@ -38,8 +38,8 @@ Router = ->
 
   @writeFile = (routingTable, cb) =>
     options = @buildOpts routingTable
-    mustache = mu.compileAndRender(path.resolve(nginxPath, 'nginx.conf.mustache'), options)
-    output = fs.createWriteStream path.resolve(nginxPath, 'nginx.conf')
+    mustache = mu.compileAndRender(path.join(nginxPath, 'nginx.conf.mustache'), options)
+    output = fs.createWriteStream path.join(nginxPath, 'nginx.conf')
     mustache.pipe output
     mustache.on 'error', (err) ->
       cb err
@@ -67,7 +67,7 @@ Router = ->
   @start = =>
     @checkStale =>
       @writeFile {}, (err) =>
-        @nginx = spawn "nginx", ['-c', path.resolve(nginxPath, 'nginx.conf')]
+        @nginx = spawn "nginx", ['-c', path.join(nginxPath, 'nginx.conf')]
         @emit 'ready'
         norespawn = false
         @on 'norespawn', ->
@@ -82,7 +82,7 @@ Router = ->
   @nginxlogrotate = =>
     files = ['error.log', 'access.log']
     for file in files
-      loc = path.join(__dirname, 'nginx', file)
+      loc = path.join(nginxPath, file)
       do (loc) =>
         fs.stat loc, (err, stat) =>
           return console.error err if err?
