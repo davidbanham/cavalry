@@ -5,6 +5,7 @@ fs = require 'fs'
 spawn = require('child_process').spawn
 Stream = require('stream').Stream
 nginxPath = path.join process.cwd(), 'nginx'
+fs.mkdir nginxPath, ->
 
 Router = ->
   @pidpath = path.join process.cwd(), 'pids'
@@ -38,7 +39,8 @@ Router = ->
 
   @writeFile = (routingTable, cb) =>
     options = @buildOpts routingTable
-    mustache = mu.compileAndRender(path.join(nginxPath, 'nginx.conf.mustache'), options)
+    options.mimePath = path.resolve(__dirname, '..', 'nginx', 'mime.types')
+    mustache = mu.compileAndRender(path.resolve(__dirname, '..', 'nginx', 'nginx.conf.mustache'), options)
     output = fs.createWriteStream path.join(nginxPath, 'nginx.conf')
     mustache.pipe output
     mustache.on 'error', (err) ->

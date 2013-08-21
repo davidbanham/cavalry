@@ -4,7 +4,7 @@ events {
 }
 error_log {{error_log}};
 http {
-    include mime.types;
+    include {{mimePath}};
     default_type application/octet-stream;
     log_format main '$remote_addr - $remote_user [$time_local] $status '
                   '"$request" $body_bytes_sent "$http_referer" '
