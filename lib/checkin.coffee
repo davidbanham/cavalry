@@ -32,13 +32,13 @@ Checkin.prototype.startCheckin = ->
   ws.on 'close', =>
     clearInterval @interval
     console.log "Checkin connection closed" unless @innerOpts.silent
-    setTimeout ->
+    setTimeout =>
       @startCheckin() if @shouldRetryCheckin
     , 500
   ws.on 'error', (err) =>
     clearInterval @interval
     console.log "Checkin connection errored with", err unless @innerOpts.silent
-    setTimeout ->
+    setTimeout =>
       @startCheckin() if @shouldRetryCheckin
     , 500
 
