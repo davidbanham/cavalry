@@ -93,9 +93,9 @@ server.on 'request', (req, res) ->
       res.writeHead 200
       res.write "Monitoring #{runner.slaveId}\r\n"
       runner.on "stdout", (buf, info) ->
-        res.write "#{info.repo} #{info.id} - #{buf.toString()}"
+        res.write "#{info.repo} #{info.id} - #{buf.toString()}\r\n"
       runner.on "stderr", (buf, info) ->
-        res.write "#{info.repo} #{info.id} - #{buf.toString()}"
+        res.write "#{info.repo} #{info.id} - #{buf.toString()}\r\n"
       runner.on "spawn", (info) ->
         res.write "#{info.repo} #{info.id} spawn\r\n"
       runner.on "stop", (info) ->
@@ -104,7 +104,7 @@ server.on 'request', (req, res) ->
         res.write "#{info.repo} #{info.id} restart\r\n"
       runner.on "exit", (code, signal, info) ->
         str = "#{info.repo} exited with code #{code}"
-        str += " from signal #{signal}\r\n" if signal?
+        str += " from signal #{signal}" if signal?
         res.write str+"\r\n"
       gitter.on "deploy", (info) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
