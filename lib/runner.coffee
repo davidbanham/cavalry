@@ -95,7 +95,7 @@ Slave.prototype.spawn = (opts, cb) ->
         , opts.debounce or 1000
     @emit "spawn",
       slave: @slaveId
-      id: @id
+      id: id
       repo: repo
       commit: commit
       command: opts.command

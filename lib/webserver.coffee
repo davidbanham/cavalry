@@ -97,7 +97,7 @@ server.on 'request', (req, res) ->
       runner.on "stderr", (buf, info) ->
         res.write "#{info.repo} #{info.id} - #{buf.toString()}"
       runner.on "spawn", (info) ->
-        res.write "#{info.repo} #{info.id} restart\r\n"
+        res.write "#{info.repo} #{info.id} spawn\r\n"
       runner.on "stop", (info) ->
         res.write "#{info.repo} #{info.id} stop\r\n"
       runner.on "restart", (info) ->
