@@ -75,7 +75,7 @@ server.on 'request', (req, res) ->
             output.stdout.push buf.toString()
           proc.process.stderr.on 'data', (buf) ->
             output.stderr.push buf.toString()
-          proc.process.on 'exit', (buf) ->
+          proc.process.on 'close', (buf) ->
             res.end JSON.stringify output
     when "/routingTable"
       getJSON req, (table) ->
