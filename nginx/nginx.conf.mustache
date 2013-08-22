@@ -41,8 +41,6 @@ http {
       listen 7005;
       server_name {{domain}};
       location / {
-        access_log off;
-        error_log off;
         proxy_pass http://{{name}};
       }
     }
