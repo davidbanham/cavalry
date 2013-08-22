@@ -92,7 +92,7 @@ Router = ->
           if stat.size > process.env.MAXLOGFILESIZE or 524288000 #500MB
             fs.rename loc, "#{loc}.1", (err) =>
               return console.error err if err?
-              @nginx.kill 'USR1' #USR1 causes nginx to reopen its logfiles
+              @nginx.kill 'SIGUSR1' #USR1 causes nginx to reopen its logfiles
 
   setInterval =>
     @nginxlogrotate()
