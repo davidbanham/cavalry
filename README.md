@@ -8,7 +8,11 @@ Cavalry is designed to work in conjuction with [Rear-Admiral](https://github.com
 
 # Installation
 
-Cavalry expects nginx to be present on the system. Port 3000 will need to be accessible by the master. Web accessible services, if they ask, will be assigned ports between 8000 and 9000.
+Cavalry expects nginx to be present on the system.
+Ports:
+- 3000 will need to be accessible by the master.
+- 7005 is where nginx is listening
+- 8000-9000 Web accessible services, if they ask, will be assigned ports between 8000 and 9000.
 
 It's in npm, so just:
     npm install -g cavalry
