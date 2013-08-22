@@ -36,7 +36,7 @@ server.on 'request', (req, res) ->
       res.setHeader "Content-Type", "application/json"
       ps = util.clone runner.processes
       delete proc.process for _, proc of ps
-      res.write JSON.stringify ps
+      res.write JSON.stringify ps, null, 2
       res.end()
     when "/fetch"
       getJSON req, (repo) ->
