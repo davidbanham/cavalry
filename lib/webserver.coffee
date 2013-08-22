@@ -52,11 +52,11 @@ server.on 'request', (req, res) ->
     when "/stop"
       getJSON req, (ids) ->
         runner.stop ids
-        res.end
+        res.end()
     when "/restart"
       getJSON req, (ids) ->
         runner.restart ids
-        res.end
+        res.end()
     when "/spawn"
       getJSON req, (opts) ->
         runner.spawn opts, (processes)->
