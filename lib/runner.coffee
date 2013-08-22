@@ -93,7 +93,7 @@ Slave.prototype.spawn = (opts, cb) ->
         setTimeout =>
           respawn() if proc.status isnt "stopped"
         , opts.debounce or 1000
-      else if proc.stats is "stopped"
+      else if proc.status is "stopped"
         delete @processes[id]
 
     @emit "spawn",
