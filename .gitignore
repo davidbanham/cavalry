@@ -1,0 +1,7 @@
+nginx/access.log
+nginx/error.log
+nginx/nginx.conf
+*.swp*
+*.swp
+deploy
+node_modules
