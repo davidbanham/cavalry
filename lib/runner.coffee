@@ -63,7 +63,7 @@ Drone.prototype.spawn = (opts, cb) ->
           port: process.env.MASTERGITPORT or 4001
           secret: process.env.MASTERPASS or 'testingpass'
         gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
-          gitter.deploy {repo: repo, commit: commit}, (err) =>
+          gitter.deploy {name: repo, commit: commit}, (err) =>
             #@emit "error", outerErr,
             #  drone: @droneId
             #  id: id
