@@ -8,5 +8,13 @@ clone = (obj) =>
     newInstance[key] = clone obj[key]
   return newInstance
 
+opter = (arr) ->
+  opts = {}
+  for opt in arr when opt.indexOf '--' is 1
+    opt = opt.replace('--', '')
+    opts[opt] = true
+  return opts
+
 module.exports =
   clone: clone
+  opter: opter
