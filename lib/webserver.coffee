@@ -91,7 +91,7 @@ server.on 'request', (req, res) ->
         res.end()
     when "/monitor"
       res.writeHead 200
-      res.write "Monitoring #{runner.droneId}\r\n"
+      res.write "Monitoring #{runner.slaveId}\r\n"
       runner.on "stdout", (buf, info) ->
         res.write "#{info.repo} #{info.id} - #{buf.toString()}"
       runner.on "stderr", (buf, info) ->

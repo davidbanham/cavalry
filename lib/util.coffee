@@ -4,7 +4,7 @@ clone = (obj) =>
   return '' if obj instanceof RegExp
   newInstance = new obj.constructor()
   for key of obj
-    continue if key is "process" or key is "respawn" or key is "drone"
+    continue if key is "process" or key is "respawn" or key is "slave"
     newInstance[key] = clone obj[key]
   return newInstance
 

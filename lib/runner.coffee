@@ -4,16 +4,16 @@ Stream = require('stream').Stream
 spawn = require('child_process').spawn
 gitter = require('../lib/gitter.coffee')()
 
-Drone = (opts={}) ->
+Slave = (opts={}) ->
   @processes = {}
-  @droneId = 'someId'
+  @slaveId = process.env.SLAVEID or Math.floor(Math.random() * (1 << 24)).toString(16)
   base = process.env.BASEDIR or process.cwd()
   @deploydir = path.resolve(process.env.DEPLOYDIR or path.join(base, 'deploy'))
   return this
 
-Drone.prototype = new Stream
+Slave.prototype = new Stream
 
-Drone.prototype.spawn = (opts, cb) ->
+Slave.prototype.spawn = (opts, cb) ->
   id = Math.floor(Math.random() * (1 << 24)).toString(16)
   repo = opts.repo
   commit = opts.commit
@@ -37,18 +37,18 @@ Drone.prototype.spawn = (opts, cb) ->
       cwd: dir
       process: innerProcess
       respawn: respawn
-      drone: @droneId
+      slave: @slaveId
 
     innerProcess.stdout.on "data", (buf) =>
       @emit "stdout", buf,
-        drone: @droneId
+        slave: @slaveId
         id: id
         repo: repo
         commit: commit
 
     innerProcess.stderr.on "data", (buf) =>
       @emit "stderr", buf,
-        drone: @droneId
+        slave: @slaveId
         id: id
         repo: repo
         commit: commit
@@ -65,14 +65,14 @@ Drone.prototype.spawn = (opts, cb) ->
         gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
           gitter.deploy {name: repo, commit: commit}, (err) =>
             #@emit "error", outerErr,
-            #  drone: @droneId
+            #  slave: @slaveId
             #  id: id
             #  repo: repo
             #  commit: commit
             respawn()
       else
         #@emit "error", err,
-        #  drone: @droneId
+        #  slave: @slaveId
         #  id: id
         #  repo: repo
         #  commit: commit
@@ -80,7 +80,7 @@ Drone.prototype.spawn = (opts, cb) ->
     innerProcess.once "exit", (code, signal) =>
       proc = @processes[id]
       @emit "exit", code, signal,
-        drone: @droneId
+        slave: @slaveId
         id: id
         repo: repo
         commit: commit
@@ -94,7 +94,7 @@ Drone.prototype.spawn = (opts, cb) ->
           respawn() if proc.status isnt "stopped"
         , opts.debounce or 1000
     @emit "spawn",
-      drone: @droneId
+      slave: @slaveId
       id: @id
       repo: repo
       commit: commit
@@ -103,7 +103,7 @@ Drone.prototype.spawn = (opts, cb) ->
   respawn()
   cb @processes[id] if cb?
 
-Drone.prototype.stop = (ids) ->
+Slave.prototype.stop = (ids) ->
   ids = [ ids ] if !Array.isArray(ids)
   for id in ids
     proc = @processes[id]
@@ -112,12 +112,12 @@ Drone.prototype.stop = (ids) ->
     proc.status = "stopped"
     proc.process.kill()
 
-Drone.prototype.restart = (ids) ->
+Slave.prototype.restart = (ids) ->
   ids = [ ids ] if !Array.isArray(ids)
   for id in ids
     proc = @processes[id]
     return false if !proc?
     @emit "restart", @processes[id]
     proc.process.kill()
-drone = new Drone()
-module.exports = drone
+slave = new Slave()
+module.exports = slave

@@ -20,7 +20,7 @@ Checkin.prototype.startCheckin = ->
     JSON.stringify
       secret: @opts.secret
       type: "checkin"
-      id: runner.droneId.toString()
+      id: runner.slaveId.toString()
       processes: util.clone runner.processes
 
   ws = new WebSocket "ws://#{@opts.hostname}:#{@opts.port}"

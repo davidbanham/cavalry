@@ -27,11 +27,11 @@ describe 'routes', ->
       domain: 'repo1.example.com'
       routes: [
         {
-          host: 'drone1.example.com'
+          host: 'slave1.example.com'
           port: 8000
         }
         {
-          host: 'drone2.example.com'
+          host: 'slave2.example.com'
           port: 8001
         }
       ]
@@ -40,7 +40,7 @@ describe 'routes', ->
       method: 'ip_hash'
       routes: [
         {
-          host: 'drone1.example.com'
+          host: 'slave1.example.com'
           port: 8001
         }
       ]
@@ -48,7 +48,7 @@ describe 'routes', ->
       domain: 'repo3.example.com'
       routes: [
         {
-          host: 'drone2.example.com'
+          host: 'slave2.example.com'
           port: 8000
         }
       ]
@@ -64,18 +64,18 @@ describe 'routes', ->
       [
         {
           name: 'repo1', method: 'least_conn', routes: [
-            { host: 'drone1.example.com', port: 8000 }
-            { host: 'drone2.example.com', port: 8001 }
+            { host: 'slave1.example.com', port: 8000 }
+            { host: 'slave2.example.com', port: 8001 }
           ]
         }
         {
           name: 'repo2', method: 'ip_hash', routes: [
-            { host: 'drone1.example.com', port: 8001 }
+            { host: 'slave1.example.com', port: 8001 }
           ]
         }
         {
           name: 'repo3', method: 'least_conn', routes: [
-            { host: 'drone2.example.com', port: 8000 }
+            { host: 'slave2.example.com', port: 8000 }
           ]
         }
       ]
