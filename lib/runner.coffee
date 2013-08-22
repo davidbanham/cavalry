@@ -6,7 +6,7 @@ gitter = require('../lib/gitter.coffee')()
 
 Slave = (opts={}) ->
   @processes = {}
-  @slaveId = process.env.SLAVEID or Math.floor(Math.random() * (1 << 24)).toString(16)
+  @slaveId = process.env.SLAVEID or "slave-#{Math.floor(Math.random() * (1 << 24)).toString(16)}"
   base = process.env.BASEDIR or process.cwd()
   @deploydir = path.resolve(process.env.DEPLOYDIR or path.join(base, 'deploy'))
   return this

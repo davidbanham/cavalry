@@ -17,9 +17,10 @@ It's in npm, so just:
 
 Configuration paramaters are passed in via environment variables. eg:
 
-    MASTERHOST=localhost MASTERPASS=masterpassword SECRET=password node index.js
+    SLAVEID=us-1 MASTERHOST=localhost MASTERPASS=masterpassword SECRET=password node index.js
 
 If they're not present, a default will be substituted.
+- SLAVEID is the identifier for the machine
 - MASTERHOST is the fqdn/ip where the master can be found
 - MASTERPASS is the password used to authenticate with the master
 - SECRET is the password the master will use to authenticate with this slave
