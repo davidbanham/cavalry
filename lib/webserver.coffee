@@ -81,7 +81,7 @@ server.on 'request', (req, res) ->
             res.end JSON.stringify output
     when "/routingTable"
       getJSON req, (table) ->
-        router.writeFile table, (err) ->
+        router.writeFile table, (err, action) ->
           throw new Error err if err?
           router.reload ->
             res.end()

@@ -4,6 +4,7 @@ os = require 'os'
 fs = require 'fs'
 spawn = require('child_process').spawn
 Stream = require('stream').Stream
+util = require '../lib/util.coffee'
 nginxPath = path.join process.cwd(), 'nginx'
 fs.mkdir nginxPath, ->
 
@@ -38,17 +39,23 @@ Router = ->
     return options
 
   @writeFile = (routingTable, cb) =>
+    tableHash = util.hashObj routingTable
+    return cb tableHash if tableHash instanceof Error
+    return cb null, false if tableHash is @currentHash
     options = @buildOpts routingTable
     options.mimePath = path.resolve(__dirname, '..', 'nginx', 'mime.types')
     mustache = mu.compileAndRender(path.resolve(__dirname, '..', 'nginx', 'nginx.conf.mustache'), options)
     output = fs.createWriteStream path.join(nginxPath, 'nginx.conf')
     mustache.pipe output
-    mustache.on 'error', (err) ->
+    mustache.on 'error', (err) =>
+      @currentHash = undefined
       cb err
-    output.on 'error', (err) ->
+    output.on 'error', (err) =>
+      @currentHash = undefined
       cb err
-    output.on 'close', ->
-      cb null
+    output.on 'close', =>
+      @currentHash = tableHash
+      cb null, true
 
   @reload = (cb) =>
     #kill is a misnomer, this instructs nginx to re-read it's configuration and gracefully retire it's workers. http://nginx.org/en/docs/control.html

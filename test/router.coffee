@@ -93,3 +93,12 @@ describe 'routes', ->
       assert.equal fs.readFileSync(path.join router.pidpath, "nginx.pid").toString(), router.nginx.pid
       done()
     , 50
+  it "Shouldn't write the same routing table twice", (done) ->
+    router.currentHash = undefined
+    router.writeFile routingTable, (err, action) ->
+      assert.equal err, null
+      assert.equal action, true
+      router.writeFile routingTable, (err, action) ->
+        assert.equal err, null
+        assert.equal action, false
+        done()
