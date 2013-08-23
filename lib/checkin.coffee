@@ -1,6 +1,7 @@
 WebSocket = require 'ws'
 runner = require('../lib/runner')
 util = require('../lib/util')
+router = require '../lib/router'
 
 Checkin = (innerOpts={})->
   @opts =
@@ -21,6 +22,7 @@ Checkin.prototype.startCheckin = ->
       type: "checkin"
       id: runner.slaveId.toString()
       processes: util.clone runner.processes
+      routingTableHash: router.currentHash
 
   ws = new WebSocket "ws://#{@opts.hostname}:#{@opts.port}"
   ws.on 'open', =>
