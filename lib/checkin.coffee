@@ -1,4 +1,3 @@
-http = require 'http'
 WebSocket = require 'ws'
 runner = require('../lib/runner')
 util = require('../lib/util')
