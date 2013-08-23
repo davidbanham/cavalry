@@ -67,6 +67,7 @@ server.on 'request', (req, res) ->
         unless opts.once
           res.writeHead 400
           return res.end()
+        res.setHeader "Content-Type", "application/json"
         runner.spawn opts, (proc) ->
           output =
             stdout: []
