@@ -4,7 +4,7 @@ path = require 'path'
 router = require '../lib/router.coffee'
 describe 'routes', ->
   before (done) ->
-    if router.nginx.stdout?
+    if router.nginx? and router.nginx.stdout?
       done()
     else
       router.once 'ready', ->
