@@ -79,6 +79,7 @@ describe "webserver", ->
           pass: "testingpass"
       , (err, res, body) ->
         rimraf deploydir, ->
+          assert.equal body.code, 0
           done assert.equal body.stdout[0], 'ohai\n'
   it "Should update the config file when a new routing table is recieved", (done) ->
     request
