@@ -93,6 +93,7 @@ server.on 'request', (req, res) ->
           port: port
         res.end()
     when "/monitor"
+      res.setTimeout 60 * 60 * 1000 # 1 hour
       res.writeHead 200
       res.write "Monitoring #{runner.slaveId}\r\n"
       runner.on "stdout", (buf, info) ->
