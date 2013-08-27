@@ -62,22 +62,46 @@ describe 'routes', ->
     assert.deepEqual options.upstream,
       [
         {
-          name: 'repo1', method: 'least_conn', routes: [
+          name: 'repo1', method: 'least_conn', directives: [], routes: [
             { host: 'slave1.example.com', port: 8000 }
             { host: 'slave2.example.com', port: 8001 }
           ]
         }
         {
-          name: 'repo2', method: 'ip_hash', routes: [
+          name: 'repo2', method: 'ip_hash', directives: [], routes: [
             { host: 'slave1.example.com', port: 8001 }
           ]
         }
         {
-          name: 'repo3', method: 'least_conn', routes: [
+          name: 'repo3', method: 'least_conn', directives: [], routes: [
             { host: 'slave2.example.com', port: 8000 }
           ]
         }
       ]
+  it "Should include the routing directives in the template", (done) ->
+    localRoutingTable =
+      repo1:
+        domain: 'repo1.example.com'
+        method: 'ip_hash'
+        directives: [
+          "real_ip_header X-Forwarded-For"
+        ]
+        routes: [
+          {
+            host: 'slave1.example.com'
+            port: 8000
+          }
+        ]
+    options = router.buildOpts localRoutingTable
+    assert.deepEqual options.upstream,
+      [
+        {
+          name: 'repo1', method: 'ip_hash', directives: [{directive: "real_ip_header X-Forwarded-For"}], routes: [
+            { host: 'slave1.example.com', port: 8000 }
+          ]
+        }
+      ]
+    done()
   it "Should render the template without throwing an error", (done) ->
     router.writeFile routingTable, (err) ->
       assert.equal null, err

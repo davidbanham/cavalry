@@ -28,6 +28,9 @@ http {
     {{#upstream}}
     upstream {{name}} {
       {{method}};
+      {{#directives}}
+      {{directive}};
+      {{/directives}}
       {{#routes}}
       server {{host}}:{{port}};
       {{/routes}}
