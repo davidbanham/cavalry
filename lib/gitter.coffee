@@ -11,9 +11,13 @@ Gitter = (opts={}) ->
   base = opts.basedir or process.cwd()
   @repodir = path.resolve(opts.repodir or path.join(base, 'repos'))
   @deploydir = path.resolve(opts.deploydir or path.join(base, 'deploy'))
-  fs.mkdir @repodir, (err) ->
+  try
+    fs.mkdirSync @repodir
+  catch err
     throwUnlessExists err
-  fs.mkdir @deploydir, (err) ->
+  try
+    fs.mkdirSync @deploydir
+  catch err
     throwUnlessExists err
 
 Gitter.prototype = new Stream

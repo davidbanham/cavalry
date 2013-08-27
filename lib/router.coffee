@@ -10,7 +10,8 @@ fs.mkdir nginxPath, ->
 
 Router = ->
   @pidpath = path.join process.cwd(), 'pids'
-  fs.mkdir @pidpath, ->
+  try
+    fs.mkdirSync @pidpath
   @buildOpts = (routingTable) =>
     options =
       worker_processes: os.cpus().length

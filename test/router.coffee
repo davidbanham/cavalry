@@ -87,8 +87,8 @@ describe 'routes', ->
     done()
   it "Should write an nginx pidfile", (done) ->
     setTimeout ->
-      assert fs.existsSync path.join router.pidpath, "nginx.pid"
-      assert.equal fs.readFileSync(path.join router.pidpath, "nginx.pid").toString(), router.nginx.pid
+      assert fs.existsSync(path.join router.pidpath, "nginx.pid"), "pidfile does not exist"
+      assert.equal fs.readFileSync(path.join router.pidpath, "nginx.pid").toString(), router.nginx.pid, "pid in file does not match process"
       done()
     , 50
   it "Shouldn't write the same routing table twice", (done) ->
