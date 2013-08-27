@@ -10,6 +10,8 @@ fs.mkdir nginxPath, ->
 
 Router = ->
   @pidpath = path.join process.cwd(), 'pids'
+  nginxTempPath = nginxPath if process.env.NGINXLOCALTEMPFILE
+  nginxTempPath = process.env.NGINXTEMPPATH if process.env.NGINXTEMPPATH?
   try
     fs.mkdirSync @pidpath
   @buildOpts = (routingTable) =>
@@ -18,6 +20,7 @@ Router = ->
       access_log: path.join(nginxPath, 'access.log')
       error_log: path.join(nginxPath, 'error.log')
       pidfile: path.join(@pidpath, 'nginx.pid')
+      temp_path: nginxTempPath if nginxTempPath?
     for name, data of routingTable
 
       options.server ?= []

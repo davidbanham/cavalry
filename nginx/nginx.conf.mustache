@@ -4,6 +4,13 @@ events {
 }
 error_log {{error_log}};
 http {
+    {{#temp_path}}
+    client_body_temp_path {{temp_path}}/nginx_temp_body;
+    proxy_temp_path {{temp_path}}/nginx_temp_proxy;
+    fastcgi_temp_path {{temp_path}}/nginx_temp_fastcgi;
+    uwsgi_temp_path {{temp_path}}/nginx_temp_uwsgi;
+    scgi_temp_path {{temp_path}}/nginx_temp_scgi;
+    {{/temp_path}}
     include {{mimePath}};
     default_type application/octet-stream;
     log_format main '$remote_addr - $remote_user [$time_local] $status '
