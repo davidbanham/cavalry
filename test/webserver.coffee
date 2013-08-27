@@ -58,7 +58,6 @@ describe "webserver", ->
       , (err, res, body) ->
         done assert.equal res.statusCode, 400
     it 'should come back once the process is finished', (done) ->
-      return done() if process.env.TRAVIS
       fs.mkdir deploydir, (err) ->
         if err?
           assert.equal err.code, 'EEXIST'
