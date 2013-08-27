@@ -58,12 +58,15 @@ describe "webserver", ->
       , (err, res, body) ->
         done assert.equal res.statusCode, 400
     it 'should come back once the process is finished', (done) ->
-      fs.mkdir deploydir, (err) ->
-        if err?
-          assert.equal err.code, 'EEXIST'
-      fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), (err) ->
-        if err?
-          assert.equal err.code, 'EEXIST'
+      try fs.mkdirSync path.resolve testpath
+      try
+        fs.mkdirSync deploydir
+      catch err
+        assert.equal err.code, 'EEXIST'
+      try
+        fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447')
+      catch err
+        assert.equal err.code, 'EEXIST'
       opts =
         repo: 'test1'
         commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'

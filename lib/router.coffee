@@ -74,6 +74,8 @@ Router = ->
           if data.toString().indexOf('nginx') > -1
             process.kill stalePid
           cb()
+        info.on 'error', (err) ->
+          console.error "Err from staleness check", err
   @start = =>
     @checkStale =>
       @writeFile {}, (err) =>
@@ -84,6 +86,10 @@ Router = ->
           norespawn = true
         @nginx.once 'exit', (code, signal) =>
           @start() unless norespawn
+        #@nginx.on 'error', (err) ->
+        #  console.error 'nginx error', err
+        #@nginx.stderr.on 'data', (data) ->
+        #  console.error 'nginx stderr says:', data.toString()
   @start()
   @nginx = null
   @takedown = =>
