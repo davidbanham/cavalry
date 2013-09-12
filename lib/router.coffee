@@ -27,17 +27,17 @@ Router = ->
       server =
         domain: data.domain
         name: name
+        directives: []
+      if data.directives?
+        for directive in data.directives
+          server.directives.push {directive: directive}
       options.server.push server
 
       options.upstream ?= []
       upstream =
         name: name
         method: data.method ? "least_conn"
-        directives: []
         routes: []
-      if data.directives?
-        for directive in data.directives
-          upstream.directives.push {directive: directive}
       for route in data.routes
         upstream.routes.push
           host: route.host

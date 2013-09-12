@@ -55,25 +55,25 @@ describe 'routes', ->
     options = router.buildOpts routingTable
     assert.deepEqual options.server,
       [
-        { domain: 'repo1.example.com', name: 'repo1' }
-        { domain: 'repo2.example.com', name: 'repo2' }
-        { domain: 'repo3.example.com', name: 'repo3' }
+        { domain: 'repo1.example.com', name: 'repo1', directives: [] }
+        { domain: 'repo2.example.com', name: 'repo2', directives: [] }
+        { domain: 'repo3.example.com', name: 'repo3', directives: [] }
       ]
     assert.deepEqual options.upstream,
       [
         {
-          name: 'repo1', method: 'least_conn', directives: [], routes: [
+          name: 'repo1', method: 'least_conn', routes: [
             { host: 'slave1.example.com', port: 8000 }
             { host: 'slave2.example.com', port: 8001 }
           ]
         }
         {
-          name: 'repo2', method: 'ip_hash', directives: [], routes: [
+          name: 'repo2', method: 'ip_hash', routes: [
             { host: 'slave1.example.com', port: 8001 }
           ]
         }
         {
-          name: 'repo3', method: 'least_conn', directives: [], routes: [
+          name: 'repo3', method: 'least_conn', routes: [
             { host: 'slave2.example.com', port: 8000 }
           ]
         }
@@ -93,13 +93,11 @@ describe 'routes', ->
           }
         ]
     options = router.buildOpts localRoutingTable
-    assert.deepEqual options.upstream,
+    assert.deepEqual options.server,
       [
-        {
-          name: 'repo1', method: 'ip_hash', directives: [{directive: "real_ip_header X-Forwarded-For"}], routes: [
-            { host: 'slave1.example.com', port: 8000 }
-          ]
-        }
+        { domain: 'repo1.example.com', name: 'repo1', directives: [
+          {directive: "real_ip_header X-Forwarded-For"}
+        ]}
       ]
     done()
   it "Should render the template without throwing an error", (done) ->

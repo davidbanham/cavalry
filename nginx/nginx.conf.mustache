@@ -28,9 +28,6 @@ http {
     {{#upstream}}
     upstream {{name}} {
       {{method}};
-      {{#directives}}
-      {{directive}};
-      {{/directives}}
       {{#routes}}
       server {{host}}:{{port}};
       {{/routes}}
@@ -48,6 +45,9 @@ http {
     }
     {{#server}}
     server {
+      {{#directives}}
+      {{directive}};
+      {{/directives}}
       listen 7005;
       server_name {{domain}};
       location / {
