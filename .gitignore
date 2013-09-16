@@ -5,3 +5,4 @@ nginx/nginx.conf
 *.swp
 deploy
 node_modules
+pids
