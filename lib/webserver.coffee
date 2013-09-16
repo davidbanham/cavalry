@@ -20,6 +20,8 @@ getJSON = (req, cb) ->
     cb JSON.parse optStr
 
 server.on 'request', (req, res) ->
+  res.setHeader "Access-Control-Allow-Origin", "*"
+  res.setHeader "Access-Control-Allow-Headers", "Authorization, X-Requested-With"
   if !req.headers.authorization?
     res.writeHead 401
     return res.end "auth required"
