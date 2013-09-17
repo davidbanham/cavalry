@@ -17,7 +17,15 @@ getJSON = (req, cb) ->
   req.on "data", (buf) ->
     optStr += buf.toString()
   req.on "end", ->
-    cb JSON.parse optStr
+    try
+      parsed = JSON.parse optStr
+    catch e
+      cb e, null
+    cb null, parsed
+
+respondJSONerr = (err, res) ->
+  res.writeHead 400
+  res.end err
 
 server.on 'request', (req, res) ->
   res.setHeader "Access-Control-Allow-Origin", "*"
@@ -41,31 +49,37 @@ server.on 'request', (req, res) ->
       res.write JSON.stringify ps, null, 2
       res.end()
     when "/fetch"
-      getJSON req, (repo) ->
+      getJSON req, (err, repo) ->
+        return respondJSONerr err, res if err?
         gitter.fetch repo.name, repo.url, (err) ->
           res.writeHead 500 if err?
           return res.end err.toString() if err?
           res.end()
     when "/deploy"
-      getJSON req, (opts) ->
+      getJSON req, (err, opts) ->
+        return respondJSONerr err, res if err?
         gitter.deploy opts, (err, action) ->
           res.writeHead 500 if err?
           res.end "#{err or ''}, #{action}"
     when "/stop"
-      getJSON req, (ids) ->
+      getJSON req, (err, ids) ->
+        return respondJSONerr err, res if err?
         runner.stop ids
         res.end()
     when "/restart"
-      getJSON req, (ids) ->
+      getJSON req, (err, ids) ->
+        return respondJSONerr err, res if err?
         runner.restart ids
         res.end()
     when "/spawn"
-      getJSON req, (opts) ->
+      getJSON req, (err, opts) ->
+        return respondJSONerr err, res if err?
         runner.spawn opts, (processes)->
           res.write JSON.stringify util.clone processes
           res.end()
     when "/exec"
-      getJSON req, (opts) ->
+      getJSON req, (err, opts) ->
+        return respondJSONerr err, res if err?
         unless opts.once
           res.writeHead 400
           return res.end()
@@ -83,7 +97,8 @@ server.on 'request', (req, res) ->
             output.signal = signal
             res.end JSON.stringify output
     when "/routingTable"
-      getJSON req, (table) ->
+      getJSON req, (err, table) ->
+        return respondJSONerr err, res if err?
         router.writeFile table, (err, action) ->
           throw new Error err if err?
           router.reload ->
