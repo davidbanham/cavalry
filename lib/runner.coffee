@@ -2,6 +2,7 @@ path = require 'path'
 util = require 'util'
 Stream = require('stream').Stream
 spawn = require('child_process').spawn
+fs = require 'fs'
 gitter = require('../lib/gitter.coffee')()
 
 Slave = (opts={}) ->
@@ -103,8 +104,28 @@ Slave.prototype.spawn = (opts, cb) ->
       commit: commit
       command: opts.command
       cwd: dir
-  respawn()
-  cb @processes[id] if cb?
+  deployOpts =
+    pid: id
+    name: repo
+    commit: commit
+  fs.exists dir, (exists) =>
+    if exists #this will probably only occur in testing
+      respawn()
+      cb @processes[id] if cb?
+    else
+      gitter.deploy deployOpts, (err, actionTaken) =>
+        if err?
+          @emit "error", err,
+            slave: @slaveId
+            id: id
+            repo: repo
+            commit: commit
+        respawn()
+        cb @processes[id] if cb?
+
+Slave.prototype.deploy = (opts, cb) ->
+  gitter.deploy {pid: opts.id, name: opts.repo, commit: opts.commit}, (err) ->
+    cb err
 
 Slave.prototype.stop = (ids) ->
   ids = [ ids ] if !Array.isArray(ids)

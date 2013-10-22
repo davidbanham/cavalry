@@ -40,16 +40,26 @@ Gitter.prototype.deploy = (opts, cb) ->
 
   checkoutdir = path.join @deploydir, "#{name}.#{pid}.#{commit}"
   targetrepo = path.join @repodir, name
-  fs.exists checkoutdir, (exists) =>
-    return cb null, false if exists
-    exec "git clone #{targetrepo} #{checkoutdir}", (err) =>
-      return cb err if err?
-      exec "git checkout #{commit}", {cwd: checkoutdir}, (err) =>
-        @emit 'deploy',
-          repo: name
-          commit: commit
-          cwd: checkoutdir
-        cb err, true
+  fs.exists targetrepo, (exists) =>
+    return innerDeploy() if exists
+    master =
+      hostname: process.env.MASTERHOST or "localhost"
+      port: process.env.MASTERGITPORT or 4001
+      secret: process.env.MASTERPASS or 'testingpass'
+    @fetch name, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{name}/", (err) =>
+      innerDeploy()
+
+  innerDeploy = =>
+    fs.exists checkoutdir, (exists) =>
+      return cb null, false if exists
+      exec "git clone #{targetrepo} #{checkoutdir}", (err) =>
+        return cb err if err?
+        exec "git checkout #{commit}", {cwd: checkoutdir}, (err) =>
+          @emit 'deploy',
+            repo: name
+            commit: commit
+            cwd: checkoutdir
+          cb err, true
 
 
 module.exports = (opts) ->
