@@ -64,7 +64,7 @@ describe "webserver", ->
       catch err
         assert.equal err.code, 'EEXIST'
       try
-        fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447')
+        fs.mkdir path.join(deploydir, 'test1.webservertest.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447')
       catch err
         assert.equal err.code, 'EEXIST'
       opts =
@@ -72,6 +72,7 @@ describe "webserver", ->
         commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
         command: ['echo', 'ohai']
         once: true
+        testingPid: 'webservertest'
       request
         url: "http://localhost:3000/exec"
         method: "post"

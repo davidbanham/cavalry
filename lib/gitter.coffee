@@ -34,8 +34,11 @@ Gitter.prototype.fetch = (repo, url, cb) ->
 Gitter.prototype.deploy = (opts, cb) ->
   name = opts.name
   commit = opts.commit
+  pid = opts.pid
 
-  checkoutdir = path.join @deploydir, "#{name}.#{commit}"
+  return cb new Error "Insufficient args" if !name? or !commit? or !pid?
+
+  checkoutdir = path.join @deploydir, "#{name}.#{pid}.#{commit}"
   targetrepo = path.join @repodir, name
   fs.exists checkoutdir, (exists) =>
     return cb null, false if exists

@@ -55,12 +55,6 @@ server.on 'request', (req, res) ->
           res.writeHead 500 if err?
           return res.end err.toString() if err?
           res.end()
-    when "/deploy"
-      getJSON req, (err, opts) ->
-        return respondJSONerr err, res if err?
-        gitter.deploy opts, (err, action) ->
-          res.writeHead 500 if err?
-          res.end "#{err or ''}, #{action}"
     when "/stop"
       getJSON req, (err, ids) ->
         return respondJSONerr err, res if err?

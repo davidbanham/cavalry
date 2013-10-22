@@ -14,10 +14,10 @@ Slave = (opts={}) ->
 Slave.prototype = new Stream
 
 Slave.prototype.spawn = (opts, cb) ->
-  id = Math.floor(Math.random() * (1 << 24)).toString(16)
+  id = opts.testingPid or Math.floor(Math.random() * (1 << 24)).toString(16)
   repo = opts.repo
   commit = opts.commit
-  dir = opts.cwd or path.join(@deploydir, repo + "." + commit)
+  dir = opts.cwd or path.join(@deploydir, "#{repo}.#{id}.#{commit}")
   cmd = opts.command[0]
   args = opts.command.slice 1
   respawn = =>
@@ -63,7 +63,7 @@ Slave.prototype.spawn = (opts, cb) ->
           port: process.env.MASTERGITPORT or 4001
           secret: process.env.MASTERPASS or 'testingpass'
         gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
-          gitter.deploy {name: repo, commit: commit}, (err) =>
+          gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
             @emit "error", outerErr,
               slave: @slaveId
               id: id

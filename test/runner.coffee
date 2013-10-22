@@ -7,10 +7,12 @@ deploydir = path.join testpath, 'deploy'
 slave = require('../lib/runner.coffee')
 slave.deploydir = deploydir
 describe 'slave', ->
+  specifiedPid = Math.floor(Math.random() * (1 << 24)).toString(16)
   before (done) ->
+    specifiedPid = Math.floor(Math.random() * (1 << 24)).toString(16)
     fs.mkdir testpath, ->
     fs.mkdir deploydir, ->
-    fs.symlink path.join(testpath, "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), path.join(testpath, "deploy", "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), ->
+    fs.symlink path.join(testpath, "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), path.join(testpath, "deploy", "test1.#{specifiedPid}.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), ->
       done()
   after (done) ->
     rimraf deploydir, ->
@@ -26,27 +28,33 @@ describe 'slave', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['touch', rand]
       once: true
+      testingPid: specifiedPid
     slave.spawn opts, (proc) ->
       assert proc.status, "running"
       assert proc.repo, "test1"
       assert proc.commit, '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       setTimeout ->
-        touchedFile = path.join deploydir, proc.repo+'.'+proc.commit, rand
+        touchedFile = path.join deploydir, "#{proc.repo}.#{proc.id}.#{proc.commit}", rand
         assert fs.existsSync touchedFile
         fs.unlinkSync touchedFile
         done()
       , 5
 
 describe 'process', ->
-  before (done) ->
+  specifiedPid = null
+  specifiedPid2 = null
+  beforeEach (done) ->
+    specifiedPid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    specifiedPid2 = Math.floor(Math.random() * (1 << 24)).toString(16)
     try
       fs.mkdirSync testpath
     try
       fs.mkdirSync deploydir
-    fs.mkdir path.join(deploydir, 'test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'), (err) ->
-      assert.equal err, null, "Error creating test directory #{err}"
-      done()
-  after (done) ->
+    fs.mkdir path.join(deploydir, "test1.#{specifiedPid}.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), (err) ->
+      fs.mkdir path.join(deploydir, "test1.#{specifiedPid2}.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), (err) ->
+        assert.equal err, null, "Error creating test directory #{err}"
+        done()
+  afterEach (done) ->
     rimraf deploydir, ->
       done()
 
@@ -57,6 +65,7 @@ describe 'process', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', '-e', "console.log('#{rand}');"]
       once: true
+      testingPid: specifiedPid
     slave.spawn opts
     slave.on 'stdout', (buf) ->
       str = buf.toString().replace(/(\r\n|\n|\r)/gm,"") #Strip the line feed.
@@ -69,6 +78,7 @@ describe 'process', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', '-e', "console.log('#{rand}');"]
       debounce: 1
+      testingPid: specifiedPid
     pid = null
     slave.spawn opts, (proc) ->
       pid = proc.id
@@ -77,8 +87,8 @@ describe 'process', ->
       str = buf.toString().replace(/(\r\n|\n|\r)/gm,"") #Strip the line feed.
       count++ if str is rand
       slave.removeAllListeners() if count is 2
-      done() if count is 2
       slave.stop pid if count is 2
+      done() if count is 2
 
   it 'should stop the process when told', (done) ->
     rand = Math.floor(Math.random() * (1 << 24)).toString(16)
@@ -87,6 +97,7 @@ describe 'process', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', '-e', "console.log('#{rand}');"]
       debounce: 1
+      testingPid: specifiedPid
     slave.spawn opts, (proc) ->
       slave.on 'stop', (info) ->
         done() if info.id is proc.id
@@ -102,11 +113,13 @@ describe 'process', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', '-e', "console.log('#{rand}');"]
       debounce: 1
+      testingPid: specifiedPid
     opts2 =
       repo: 'test1'
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', '-e', "console.log('#{rand2}');"]
       debounce: 1
+      testingPid: specifiedPid2
     pids = []
     count = 0
     slave.spawn opts, (proc) ->
@@ -126,6 +139,7 @@ describe 'process', ->
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       command: ['node', 'server.js']
       debounce: 1
+      testingPid: specifiedPid
     slave.spawn opts, (proc) ->
       slave.on 'exit', (code, signal, info) ->
         slave.stop proc.id if info.id is proc.id
