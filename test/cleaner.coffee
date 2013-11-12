@@ -36,11 +36,11 @@ describe "cleaner", ->
    it 'should not delete active directories', (done) ->
      runner.processes =
        'someactivepid': {}
-     fs.mkdirSync path.join deploydir, 'someactivepid'
+     fs.mkdirSync path.join deploydir, 'reponame.someactivepid.biglongsha'
      cleaner.clean (err) ->
        assert.equal err, null
-       assert fs.existsSync path.join deploydir, 'someactivepid'
-       rimraf path.join(deploydir, 'someactivepid'), ->
+       assert fs.existsSync path.join deploydir, 'reponame.someactivepid.biglongsha'
+       rimraf path.join(deploydir, 'reponame.someactivepid.biglongsha'), ->
          done()
 describe 'rmIfDir', ->
   before (done) ->
