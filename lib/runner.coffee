@@ -123,7 +123,7 @@ Slave.prototype.spawn = (opts, cb) ->
             id: id
             repo: repo
             commit: commit
-          runSetup()
+        runSetup()
   runSetup = =>
     if opts.setup? and Array.isArray(opts.setup)
       exec opts.setup.join(' '), {cwd: dir, env: generateEnv(opts.env)}, (err, stdout, stderr) =>
