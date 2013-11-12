@@ -7,6 +7,7 @@ rimraf = require 'rimraf'
 testpath = path.resolve '.', 'testrepos'
 deploydir = path.join testpath, 'deploy'
 runner = require "../lib/runner.coffee"
+util = require "../lib/util.coffee"
 runner.deploydir = deploydir
 server = require "../lib/webserver.coffee"
 describe "webserver", ->
@@ -50,12 +51,34 @@ describe "webserver", ->
       assert.equal body, '2'
       done()
     .auth "user", "testingpass"
+  describe "api version checking", ->
+    it 'should reject all write calls if the api version does not match', (done) ->
+      writes = [
+        'stop'
+        'restart'
+        'spawn'
+        'exec'
+      ]
+      for route, i in writes
+        do (route, i) ->
+          opts =
+            apiVersion: 1
+          request
+            url: "http://localhost:3000/1/#{route}"
+            method: 'post'
+            json: opts
+            auth:
+              user: 'user'
+              pass: 'testingpass'
+          , (err, res, body) ->
+            assert.equal res.statusCode, 404, "code was #{res.statusCode}, route was #{route}"
+            done() if i is writes.length - 1
   describe 'exec', ->
     it 'should reject if opts.once isnt set', (done) ->
       opts =
         repo: 'test1'
       request
-        url: "http://localhost:3000/exec"
+        url: "http://localhost:3000/#{util.apiVersion}/exec"
         method: "post"
         json: opts
         auth:
@@ -79,8 +102,9 @@ describe "webserver", ->
         command: ['echo', 'ohai']
         once: true
         testingPid: 'webservertest'
+        apiVersion: util.apiVersion
       request
-        url: "http://localhost:3000/exec"
+        url: "http://localhost:3000/#{util.apiVersion}/exec"
         method: "post"
         json: opts
         auth:

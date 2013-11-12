@@ -55,23 +55,23 @@ server.on 'request', (req, res) ->
           res.writeHead 500 if err?
           return res.end err.toString() if err?
           res.end()
-    when "/stop"
+    when "/#{util.apiVersion}/stop"
       getJSON req, (err, ids) ->
         return respondJSONerr err, res if err?
         runner.stop ids
         res.end()
-    when "/restart"
+    when "/#{util.apiVersion}/restart"
       getJSON req, (err, ids) ->
         return respondJSONerr err, res if err?
         runner.restart ids
         res.end()
-    when "/spawn"
+    when "/#{util.apiVersion}/spawn"
       getJSON req, (err, opts) ->
         return respondJSONerr err, res if err?
         runner.spawn opts, (processes)->
           res.write JSON.stringify util.clone processes
           res.end()
-    when "/exec"
+    when "/#{util.apiVersion}/exec"
       getJSON req, (err, opts) ->
         return respondJSONerr err, res if err?
         unless opts.once
@@ -125,7 +125,7 @@ server.on 'request', (req, res) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
     when '/apiVersion'
       res.writeHead 200
-      res.write util.apiVersion
+      res.write util.apiVersion.toString()
       res.end()
     else
       res.writeHead 404
