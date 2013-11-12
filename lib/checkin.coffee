@@ -23,6 +23,7 @@ Checkin.prototype.startCheckin = ->
       id: runner.slaveId.toString()
       processes: util.clone runner.processes
       routingTableHash: router.currentHash
+      apiVersion: util.apiVersion
 
   ws = new WebSocket "ws://#{@opts.hostname}:#{@opts.port}"
   ws.on 'open', =>

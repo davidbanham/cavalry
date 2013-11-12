@@ -3,6 +3,7 @@ http = require 'http'
 WebSocketServer = require('ws').Server
 checkin = require('../lib/checkin.coffee')({silent: true})
 runner = require '../lib/runner.coffee'
+util = require '../lib/util.coffee'
 master = null
 describe "checkin", ->
   beforeEach (done) ->
@@ -20,6 +21,7 @@ describe "checkin", ->
         parsed = JSON.parse message
         assert.equal parsed.type, "checkin"
         assert.equal parsed.secret, "testingpass"
+        assert.equal parsed.apiVersion, util.apiVersion
         done()
   it 'should send the proceses object with the checkin', (done) ->
     runner.processes =
