@@ -125,7 +125,7 @@ server.on 'request', (req, res) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
     when '/apiVersion'
       res.writeHead 200
-      res.write util.apiVersion.toString()
+      res.write util.apiVersion
       res.end()
     else
       res.writeHead 404
