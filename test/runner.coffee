@@ -147,3 +147,31 @@ describe 'process', ->
       slave.restart proc.id
   it 'should expose the deploy directory', ->
     assert slave.deploydir
+
+describe 'setup', ->
+  specifiedPid = Math.floor(Math.random() * (1 << 24)).toString(16)
+  before (done) ->
+    fs.mkdir testpath, ->
+    fs.mkdir deploydir, ->
+    fs.symlink path.join(testpath, "test1.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), path.join(testpath, "deploy", "test1.#{specifiedPid}.7bc4bbc44cf9ce4daa7dee4187a11759a51c3447"), ->
+      done()
+
+  after (done) ->
+    rimraf deploydir, ->
+      done()
+
+  it 'should accept a setup task within a spawn call', (done) ->
+    rand = Math.floor(Math.random() * (1 << 24)).toString(16)
+    opts =
+      repo: 'test1'
+      commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
+      setup: ['touch', rand]
+      command: ['echo']
+      once: true
+      testingPid: specifiedPid
+    slave.spawn opts, (proc) ->
+      setTimeout ->
+        touchedFile = path.join deploydir, "#{proc.repo}.#{proc.id}.#{proc.commit}", rand
+        assert fs.existsSync touchedFile
+        fs.unlinkSync touchedFile
+        done()

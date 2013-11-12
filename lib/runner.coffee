@@ -2,6 +2,7 @@ path = require 'path'
 util = require 'util'
 Stream = require('stream').Stream
 spawn = require('child_process').spawn
+exec = require('child_process').exec
 fs = require 'fs'
 gitter = require('../lib/gitter.coffee')()
 
@@ -21,10 +22,14 @@ Slave.prototype.spawn = (opts, cb) ->
   dir = opts.cwd or path.join(@deploydir, "#{repo}.#{id}.#{commit}")
   cmd = opts.command[0]
   args = opts.command.slice 1
-  respawn = =>
+  generateEnv = (supp) ->
     env = {}
     env[k] = v for k,v of process.env
     env[k] = v for k,v of opts.env
+    return env
+
+  respawn = =>
+    env = generateEnv(opts.env)
     innerProcess = spawn cmd, args,
       cwd: dir
       env: env
@@ -56,7 +61,6 @@ Slave.prototype.spawn = (opts, cb) ->
 
     innerProcess.on "error", (err) =>
       #If it's an ENOENT, try fetching the repo from the master
-      console.error "error", err
       if err.code is "ENOENT"
         outerErr = err
         master =
@@ -110,8 +114,7 @@ Slave.prototype.spawn = (opts, cb) ->
     commit: commit
   fs.exists dir, (exists) =>
     if exists #this will probably only occur in testing
-      respawn()
-      cb @processes[id] if cb?
+      runSetup()
     else
       gitter.deploy deployOpts, (err, actionTaken) =>
         if err?
@@ -120,8 +123,28 @@ Slave.prototype.spawn = (opts, cb) ->
             id: id
             repo: repo
             commit: commit
-        respawn()
-        cb @processes[id] if cb?
+          runSetup()
+  runSetup = =>
+    if opts.setup? and Array.isArray(opts.setup)
+      exec opts.setup.join(' '), {cwd: dir, env: generateEnv(opts.env)}, (err, stdout, stderr) =>
+        if err?
+          @emit "error", err,
+            slave: @slaveId
+            id: id
+            repo: repo
+            commit: commit
+        @emit "setupComplete", {stdout: stdout, stderr: stderr},
+          slave: @slaveId
+          id: id
+          repo: repo
+          commit: commit
+        firstSpawn()
+    else
+      firstSpawn()
+
+  firstSpawn = =>
+    respawn()
+    cb @processes[id] if cb?
 
 Slave.prototype.deploy = (opts, cb) ->
   gitter.deploy {pid: opts.id, name: opts.repo, commit: opts.commit}, (err) ->
