@@ -5,6 +5,9 @@ fs = require 'fs'
 path = require 'path'
 
 Cleaner = ->
+  setInterval =>
+    @clean ->
+  , 60 * 1000
   return this
 
 Cleaner.prototype = new Stream

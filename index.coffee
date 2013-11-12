@@ -1,5 +1,6 @@
 server = require './lib/webserver.coffee'
 checkin = require('./lib/checkin.coffee')()
+cleaner = require './lib/cleaner.coffee'
 util = require './lib/util.coffee'
 opts = util.opter process.argv
 
