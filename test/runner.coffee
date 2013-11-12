@@ -145,3 +145,5 @@ describe 'process', ->
         slave.stop proc.id if info.id is proc.id
         done() if info.id is proc.id
       slave.restart proc.id
+  it 'should expose the deploy directory', ->
+    assert slave.deploydir
