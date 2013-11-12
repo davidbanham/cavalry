@@ -29,3 +29,4 @@ module.exports =
   clone: clone
   opter: opter
   hashObj: hashObj
+  apiVersion: 2

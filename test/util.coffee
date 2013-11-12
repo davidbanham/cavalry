@@ -5,3 +5,5 @@ describe 'util', ->
     opts = util.opter ['node', '/some/path', '--foo', '--bar']
     assert opts.foo
     assert opts.bar
+  it 'should return the api version', ->
+    assert.equal util.apiVersion, 2

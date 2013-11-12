@@ -44,6 +44,12 @@ describe "webserver", ->
         port: 8001
       done()
     .auth "user", "testingpass"
+  it 'should return an api version', (done) ->
+    request.get "http://localhost:3000/apiVersion", (err, res, body) ->
+      assert.equal err, null
+      assert.equal body, '2'
+      done()
+    .auth "user", "testingpass"
   describe 'exec', ->
     it 'should reject if opts.once isnt set', (done) ->
       opts =

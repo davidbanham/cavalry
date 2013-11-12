@@ -123,6 +123,10 @@ server.on 'request', (req, res) ->
         res.write str+"\r\n"
       gitter.on "deploy", (info) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
+    when '/apiVersion'
+      res.writeHead 200
+      res.write util.apiVersion.toString()
+      res.end()
     else
       res.writeHead 404
       res.end "not found"
