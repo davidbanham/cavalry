@@ -6,4 +6,4 @@ describe 'util', ->
     assert opts.foo
     assert opts.bar
   it 'should return the api version', ->
-    assert.equal util.apiVersion, 2
+    assert.equal util.apiVersion, 1

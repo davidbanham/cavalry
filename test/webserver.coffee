@@ -48,7 +48,7 @@ describe "webserver", ->
   it 'should return an api version', (done) ->
     request.get "http://localhost:3000/apiVersion", (err, res, body) ->
       assert.equal err, null
-      assert.equal body, '2'
+      assert.equal body, util.apiVersion
       done()
     .auth "user", "testingpass"
   describe "api version checking", ->
@@ -62,9 +62,9 @@ describe "webserver", ->
       for route, i in writes
         do (route, i) ->
           opts =
-            apiVersion: 1
+            apiVersion: 0
           request
-            url: "http://localhost:3000/1/#{route}"
+            url: "http://localhost:3000/0/#{route}"
             method: 'post'
             json: opts
             auth:
