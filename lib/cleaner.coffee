@@ -25,6 +25,7 @@ Cleaner.prototype.clean = (cb) ->
         return checkDone i if dir.charAt(0) is '.'
         return checkDone i if Object.keys(runner.processes).indexOf(pid) > -1
         @rmIfDir path.join(deploydir, dir), (err) ->
+          errs = [] if !errs?
           errs.push err if err?
           checkDone i
 
