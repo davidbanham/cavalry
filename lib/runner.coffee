@@ -133,6 +133,8 @@ Slave.prototype.spawn = (opts, cb) ->
         #    id: id
         #    repo: repo
         #    commit: commit
+        if err?
+          return cb {}
         @emit "setupComplete", {stdout: stdout, stderr: stderr},
           slave: @slaveId
           id: id
