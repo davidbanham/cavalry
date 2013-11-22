@@ -69,18 +69,18 @@ Slave.prototype.spawn = (opts, cb) ->
           secret: process.env.MASTERPASS or 'testingpass'
         gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
           gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
-            @emit "error", outerErr,
-              slave: @slaveId
-              id: id
-              repo: repo
-              commit: commit
+            #@emit "error", outerErr,
+            #  slave: @slaveId
+            #  id: id
+            #  repo: repo
+            #  commit: commit
             respawn()
-      else
-        @emit "error", err,
-          slave: @slaveId
-          id: id
-          repo: repo
-          commit: commit
+      #else
+      #  @emit "error", err,
+      #    slave: @slaveId
+      #    id: id
+      #    repo: repo
+      #    commit: commit
 
     innerProcess.once "exit", (code, signal) =>
       proc = @processes[id]
@@ -117,22 +117,22 @@ Slave.prototype.spawn = (opts, cb) ->
       runSetup()
     else
       gitter.deploy deployOpts, (err, actionTaken) =>
-        if err?
-          @emit "error", err,
-            slave: @slaveId
-            id: id
-            repo: repo
-            commit: commit
+        #if err?
+        #  @emit "error", err,
+        #    slave: @slaveId
+        #    id: id
+        #    repo: repo
+        #    commit: commit
         runSetup()
   runSetup = =>
     if opts.setup? and Array.isArray(opts.setup)
       exec opts.setup.join(' '), {cwd: dir, env: generateEnv(opts.env)}, (err, stdout, stderr) =>
-        if err?
-          @emit "error", err,
-            slave: @slaveId
-            id: id
-            repo: repo
-            commit: commit
+        #if err?
+        #  @emit "error", err,
+        #    slave: @slaveId
+        #    id: id
+        #    repo: repo
+        #    commit: commit
         @emit "setupComplete", {stdout: stdout, stderr: stderr},
           slave: @slaveId
           id: id
