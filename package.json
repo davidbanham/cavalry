@@ -1,6 +1,6 @@
 {
   "name": "cavalry",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Basically Fleet without dnode.",
   "main": "index.coffee",
   "bin": "./index.js",
