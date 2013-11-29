@@ -121,6 +121,8 @@ server.on 'request', (req, res) ->
         str = "#{info.repo} exited with code #{code}"
         str += " from signal #{signal}" if signal?
         res.write str+"\r\n"
+      runner.on "error", (err) ->
+        res.write "#{info.repo} #{info.id} error - #{err.toString()}"
       gitter.on "deploy", (info) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
     when '/apiVersion'

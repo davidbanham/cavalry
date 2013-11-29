@@ -39,6 +39,12 @@ describe 'slave', ->
         fs.unlinkSync touchedFile
         done()
       , 5
+   it 'should not emit an error event if there is no listener', ->
+     slave.emitErr 'error', new Error 'test error'
+   it 'should emit an error event if there is a listener', (done) ->
+     slave.on 'error', (err) ->
+       done assert.equal err.message, 'test error'
+     slave.emitErr 'error', new Error 'test error'
 
 describe 'process', ->
   specifiedPid = null
