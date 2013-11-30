@@ -174,5 +174,7 @@ Slave.prototype.emitErr = ->
   if @listeners('error').length > 0
     @emit.apply this, arguments
 
+Slave.prototype.started = new Date().toISOString()
+
 slave = new Slave()
 module.exports = slave

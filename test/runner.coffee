@@ -45,6 +45,8 @@ describe 'slave', ->
     slave.on 'error', (err) ->
       done assert.equal err.message, 'test error'
     slave.emitErr 'error', new Error 'test error'
+  it 'should expose the time it was started', ->
+    assert slave.started
 
 describe 'process', ->
   specifiedPid = null

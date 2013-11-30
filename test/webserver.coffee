@@ -51,6 +51,10 @@ describe "webserver", ->
       assert.equal body, util.apiVersion
       done()
     .auth "user", "testingpass"
+  it 'should expose the uptime of the runner', (done) ->
+    request.get "http://localhost:3000/uptime", (err, res, body) ->
+      done assert !isNaN(body)
+    .auth "user", "testingpass"
   describe "api version checking", ->
     it 'should reject all write calls if the api version does not match', (done) ->
       writes = [

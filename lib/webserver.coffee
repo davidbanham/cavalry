@@ -129,6 +129,10 @@ server.on 'request', (req, res) ->
       res.writeHead 200
       res.write util.apiVersion.toString()
       res.end()
+    when '/uptime'
+      res.writeHead 200
+      res.write (new Date() - new Date(runner.started)).toString()
+      res.end()
     else
       res.writeHead 404
       res.end "not found"
