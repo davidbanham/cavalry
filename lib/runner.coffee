@@ -62,18 +62,24 @@ Slave.prototype.spawn = (opts, cb) ->
     innerProcess.on "error", (err) =>
       #If it's an ENOENT, try fetching the repo from the master
       if err.code is "ENOENT"
-        outerErr = err
         master =
           hostname: process.env.MASTERHOST or "localhost"
           port: process.env.MASTERGITPORT or 4001
           secret: process.env.MASTERPASS or 'testingpass'
         gitter.fetch repo, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{repo}/", (err) =>
-          gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
-            @emitErr "error", outerErr,
+          if err?
+            @emitErr "error", err,
               slave: @slaveId
               id: id
               repo: repo
               commit: commit
+          gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
+            if err?
+              @emitErr "error", err,
+                slave: @slaveId
+                id: id
+                repo: repo
+                commit: commit
             respawn()
       else
         @emitErr "error", err,
