@@ -12,6 +12,7 @@ Stream = require('stream').Stream
 describe "gitter", ->
 
   after (done) ->
+    @timeout 10000
     rimraf opts.repodir, ->
     rimraf opts.deploydir, ->
       done()
@@ -80,3 +81,24 @@ describe "gitter", ->
       assert.equal null, err
       assert tookaction
       done err
+
+  #it 'should perform under load', (done) ->
+  #  @timeout 100000
+  #  completed = 0
+  #  iterations = [1..500]
+  #  for i in iterations
+  #    do ->
+  #      name = 'test1'
+  #      commit = '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
+  #      pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+  #      gitter.deploy
+  #        name: name
+  #        commit: commit
+  #        pid: pid
+  #      , (err, tookaction) ->
+  #        fs.readdir path.join(opts.deploydir, "#{name}.#{pid}.#{commit}"), (err, files) ->
+  #          assert.deepEqual ['.git', 'server.js'], files
+  #          assert.equal null, err
+  #          assert tookaction
+  #          completed++
+  #          done() if completed is iterations.length
