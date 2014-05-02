@@ -55,6 +55,7 @@ Gitter.prototype.deploy = (opts, cb) ->
       exec "git clone #{targetrepo} #{checkoutdir}", (err) =>
         return cb err if err?
         exec "git checkout #{commit}", {cwd: checkoutdir}, (err) =>
+          return cb err if err?
           @emit 'deploy',
             repo: name
             commit: commit
