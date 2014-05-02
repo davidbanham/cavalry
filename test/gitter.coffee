@@ -23,6 +23,12 @@ describe "gitter", ->
     @timeout 10000
     gitter.fetch "test1", "https://github.com/davidbanham/test1.git", (err) ->
       done err
+
+  it 'should return an error for an unreachable repo', (done) ->
+    @timeout 10000
+    gitter.fetch "phantom", "http://example.com/thisrepodoesnotexistnotevenalittlebit", (err) ->
+      assert.notEqual err, null
+      done()
   describe 'opt checking', ->
     it 'should bail if name is missing', (done) ->
       gitter.deploy
@@ -44,14 +50,26 @@ describe "gitter", ->
         done assert.deepEqual err, new Error 'Insufficient args'
 
   it 'should deploy a repo without error', (done) ->
+    @timeout 10000
+    gitter.fetch "test1", "https://github.com/davidbanham/test1.git", (err) ->
+      gitter.deploy
+        name: 'test1'
+        commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
+        pid: Math.floor(Math.random() * (1 << 24)).toString(16)
+      , (err, tookaction) ->
+        assert.equal null, err
+        assert tookaction
+        done err
+
+  it 'should fail gracefully with an unreachable repo', (done) ->
     gitter.deploy
-      name: 'test1'
+      name: 'foo'
       commit: '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
       pid: Math.floor(Math.random() * (1 << 24)).toString(16)
     , (err, tookaction) ->
-      assert.equal null, err
-      assert tookaction
-      done err
+      assert.notEqual null, err
+      assert err.message.indexOf 'Failed connect to' > -1
+      done()
 
   it 'should deploy the repo to the correct dir', (done) ->
     name = 'test1'

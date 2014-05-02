@@ -2,6 +2,7 @@ Stream = require('stream').Stream
 exec = require('child_process').exec
 fs = require 'fs'
 path = require 'path'
+rimraf = require 'rimraf'
 
 throwUnlessExists = (err) ->
   if err?
@@ -29,7 +30,11 @@ Gitter.prototype.fetch = (repo, url, cb) ->
     exec "git init", {cwd: fetchdir}, (err) ->
       throw err if err?
       exec "git fetch #{url}", {cwd: fetchdir}, (err) ->
-        cb err
+        if err?
+          rimraf fetchdir, ->
+            cb err
+        else
+          cb err
 
 Gitter.prototype.deploy = (opts, cb) ->
   name = opts.name
@@ -47,6 +52,7 @@ Gitter.prototype.deploy = (opts, cb) ->
       port: process.env.MASTERGITPORT or 4001
       secret: process.env.MASTERPASS or 'testingpass'
     @fetch name, "http://git:#{master.secret}@#{master.hostname}:#{master.port}/#{name}/", (err) =>
+      return cb err if err?
       innerDeploy()
 
   innerDeploy = =>
