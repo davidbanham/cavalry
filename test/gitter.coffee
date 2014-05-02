@@ -66,3 +66,17 @@ describe "gitter", ->
       fs.exists path.join(opts.deploydir, "#{name}.#{pid}.#{commit}"), (exists) ->
         assert exists
         done()
+
+  it 'should deploy all files in a repo', (done) ->
+    name = 'test1'
+    commit = '7bc4bbc44cf9ce4daa7dee4187a11759a51c3447'
+    pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    gitter.deploy
+      name: name
+      commit: commit
+      pid: pid
+    , (err, tookaction) ->
+      assert.deepEqual ['.git', 'server.js'], fs.readdirSync path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+      assert.equal null, err
+      assert tookaction
+      done err
