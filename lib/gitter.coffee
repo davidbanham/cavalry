@@ -3,6 +3,7 @@ exec = require('child_process').exec
 fs = require 'fs'
 path = require 'path'
 rimraf = require 'rimraf'
+find = require 'findit'
 
 throwUnlessExists = (err) ->
   if err?
@@ -68,6 +69,46 @@ Gitter.prototype.deploy = (opts, cb) ->
             cwd: checkoutdir
           cb err, true
 
+Gitter.prototype.check = (opts, cb) ->
+  #TODO check that the hashes are correct rather than just the correct number of files
+  checkoutdir = path.join @deploydir, "#{opts.name}.#{opts.pid}.#{opts.commit}"
+  exec "git ls-tree -r #{opts.commit}", {cwd: checkoutdir}, (err, stdout) =>
+    return cb err, false if err
+
+    file_data = stdout.split '\n'
+    expected_files = []
+
+    for file in file_data
+      arr = file.split ' '
+      continue if arr.length is 1
+
+      arr2 = arr[2].split '\t'
+
+      expected_files.push
+        mode: arr[0]
+        type: arr[1]
+        sha: arr2[0]
+        name: arr2[1]
+
+    return cb new Error 'empty repository', false if expected_files.length is 0
+
+    actual_files = []
+
+    finder = find checkoutdir
+    finder.on 'file', (file) ->
+      actual_files.push
+        name: path.relative checkoutdir, file
+
+    finder.on 'directory', (dir, stat, stop) ->
+      stop() if dir.indexOf('.git') > -1
+
+    finder.on 'end', ->
+      return cb null, false if actual_files.length isnt expected_files.length
+      file_names = actual_files.map (file) ->
+        return file.name
+      for file in expected_files
+        return cb new Error('file missing'), false if file_names.indexOf(file.name) < 0
+      return cb null, true
 
 module.exports = (opts) ->
   new Gitter opts

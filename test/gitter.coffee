@@ -2,6 +2,9 @@ assert = require 'assert'
 path = require 'path'
 rimraf = require 'rimraf'
 fs = require 'fs'
+mkdirp = require 'mkdirp'
+http = require 'http'
+
 testpath = path.resolve '.', 'testrepos'
 opts =
   deploydir: path.join testpath, 'deploy'
@@ -99,6 +102,65 @@ describe "gitter", ->
       assert.equal null, err
       assert tookaction
       done err
+
+  it 'should pass a correctly checked out repo', (done) ->
+    name = 'test1'
+    commit = '5efab4b042ca0ef11d9b392412bc7a542aed231d'
+    pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    gitter.deploy
+      name: name
+      commit: commit
+      pid: pid
+    , (err, tookaction) ->
+      assert.deepEqual ['.git', 'server.js', 'subdir'], fs.readdirSync path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+      assert.equal null, err
+      assert tookaction
+      gitter.check
+        name: name
+        commit: commit
+        pid: pid
+      , (err, complete) ->
+        assert.equal err, null
+        assert.equal complete, true
+        done()
+
+  it 'should fail an incorrectly checked out repo', (done) ->
+    name = 'test1'
+    commit = '5efab4b042ca0ef11d9b392412bc7a542aed231d'
+    pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    checkoutdir = path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+    mkdirp.sync checkoutdir
+    gitter.check
+      name: name
+      commit: commit
+      pid: pid
+    , (err, complete) ->
+      assert.notEqual err, null
+      assert.equal err.message.slice(0, -1), 'Command failed: fatal: not a tree object'
+      assert.equal complete, false
+      done()
+
+  it 'should fail a repo with the correct number of different files', (done) ->
+    name = 'test1'
+    commit = '5efab4b042ca0ef11d9b392412bc7a542aed231d'
+    pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    checkoutdir = path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+    gitter.deploy
+      name: name
+      commit: commit
+      pid: pid
+    , (err, tookaction) ->
+      assert.equal null, err
+      fs.renameSync path.join(checkoutdir, 'server.js'), path.join(checkoutdir, 'foo.bar')
+      assert tookaction
+      gitter.check
+        name: name
+        commit: commit
+        pid: pid
+      , (err, complete) ->
+        assert.notEqual err, null
+        assert.equal complete, false
+        done()
 
   #it 'should perform under load', (done) ->
   #  @timeout 100000

@@ -64,7 +64,7 @@ Slave.prototype.spawn = (opts, cb) ->
       if err.code is "ENOENT"
         gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
           if err?
-            @emitErr "error", err,
+            return @emitErr "error", err,
               slave: @slaveId
               id: id
               repo: repo
