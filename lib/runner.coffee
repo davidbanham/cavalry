@@ -62,14 +62,22 @@ Slave.prototype.spawn = (opts, cb) ->
     innerProcess.on "error", (err) =>
       #If it's an ENOENT, try fetching the repo from the master
       if err.code is "ENOENT"
-        gitter.deploy {pid: id, name: repo, commit: commit}, (err) =>
+        innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
+        gitter.deploy innerOpts, (err) =>
           if err?
             return @emitErr "error", err,
               slave: @slaveId
               id: id
               repo: repo
               commit: commit
-          respawn()
+          gitter.check innerOpts, (err, complete) =>
+            if err?
+              return @emitErr "error", err,
+                slave: @slaveId
+                id: id
+                repo: repo
+                commit: commit
+            respawn()
       else
         @emitErr "error", err,
           slave: @slaveId
@@ -119,7 +127,15 @@ Slave.prototype.spawn = (opts, cb) ->
             repo: repo
             commit: commit
           return cb {}
-        runSetup()
+        gitter.check deployOpts, (err, complete) =>
+          if err?
+            @emitErr "error", err,
+              slave: @slaveId
+              id: id
+              repo: repo
+              commit: commit
+            return cb {}
+          runSetup()
   runSetup = =>
     if opts.setup? and Array.isArray(opts.setup)
       exec opts.setup.join(' '), {cwd: dir, env: generateEnv(opts.env)}, (err, stdout, stderr) =>
@@ -144,9 +160,14 @@ Slave.prototype.spawn = (opts, cb) ->
     respawn()
     cb @processes[id] if cb?
 
-Slave.prototype.deploy = (opts, cb) ->
-  gitter.deploy {pid: opts.id, name: opts.repo, commit: opts.commit}, (err) ->
-    cb err
+Slave.prototype.deploy = (opts, cb) =>
+  innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
+  gitter.deploy innerOpts, (err) ->
+    return cb err if err
+    gitter.check innerOpts, (err, complete) ->
+      cb err if err
+      cb new Error('checkout incomplete') if !complete
+      cb null
 
 Slave.prototype.stop = (ids) ->
   ids = [ ids ] if !Array.isArray(ids)
