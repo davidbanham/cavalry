@@ -99,6 +99,10 @@ Gitter.prototype.check = (opts, cb) ->
       actual_files.push
         name: path.relative checkoutdir, file
 
+    finder.on 'link', (file) ->
+      actual_files.push
+        name: path.relative checkoutdir, file
+
     finder.on 'directory', (dir, stat, stop) ->
       stop() if dir.indexOf('.git') > -1
 
