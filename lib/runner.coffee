@@ -70,6 +70,8 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
+            @processes[id].status = 'stopped'
+            return cb {}
           gitter.check innerOpts, (err, complete) =>
             if err?
               return @emitErr "error", err,
@@ -77,6 +79,7 @@ Slave.prototype.spawn = (opts, cb) ->
                 id: id
                 repo: repo
                 commit: commit
+              @processes[id].status = 'stopped'
               return cb {}
             if !complete
               @emitErr "error", new Error('checkout incomplete'),
@@ -84,6 +87,7 @@ Slave.prototype.spawn = (opts, cb) ->
                 id: id
                 repo: repo
                 commit: commit
+              @processes[id].status = 'stopped'
               return cb {}
             respawn()
       else
@@ -134,6 +138,7 @@ Slave.prototype.spawn = (opts, cb) ->
             id: id
             repo: repo
             commit: commit
+          @processes[id].status = 'stopped'
           return cb {}
         gitter.check deployOpts, (err, complete) =>
           if err?
@@ -142,6 +147,7 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
+            @processes[id].status = 'stopped'
             return cb {}
           if !complete
             @emitErr "error", new Error('checkout incomplete'),
@@ -149,6 +155,7 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
+            @processes[id].status = 'stopped'
             return cb {}
           runSetup()
   runSetup = =>
@@ -161,6 +168,7 @@ Slave.prototype.spawn = (opts, cb) ->
             repo: repo
             commit: commit
         if err?
+          @processes[id].status = 'stopped'
           return cb {}
         @emit "setupComplete", {stdout: stdout, stderr: stderr},
           slave: @slaveId
