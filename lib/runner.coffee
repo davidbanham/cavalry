@@ -70,7 +70,7 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
-            @processes[id].status = 'stopped'
+            @processes[id].status = 'stopped' if @processes[id]
             return cb {}
           gitter.check innerOpts, (err, complete) =>
             if err?
@@ -79,7 +79,7 @@ Slave.prototype.spawn = (opts, cb) ->
                 id: id
                 repo: repo
                 commit: commit
-              @processes[id].status = 'stopped'
+              @processes[id].status = 'stopped' if @processes[id]
               return cb {}
             if !complete
               @emitErr "error", new Error('checkout incomplete'),
@@ -87,7 +87,7 @@ Slave.prototype.spawn = (opts, cb) ->
                 id: id
                 repo: repo
                 commit: commit
-              @processes[id].status = 'stopped'
+              @processes[id].status = 'stopped' if @processes[id]
               return cb {}
             respawn()
       else
@@ -138,7 +138,7 @@ Slave.prototype.spawn = (opts, cb) ->
             id: id
             repo: repo
             commit: commit
-          @processes[id].status = 'stopped'
+          @processes[id].status = 'stopped' if @processes[id]
           return cb {}
         gitter.check deployOpts, (err, complete) =>
           if err?
@@ -147,7 +147,7 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
-            @processes[id].status = 'stopped'
+            @processes[id].status = 'stopped' if @processes[id]
             return cb {}
           if !complete
             @emitErr "error", new Error('checkout incomplete'),
@@ -155,7 +155,7 @@ Slave.prototype.spawn = (opts, cb) ->
               id: id
               repo: repo
               commit: commit
-            @processes[id].status = 'stopped'
+            @processes[id].status = 'stopped' if @processes[id]
             return cb {}
           runSetup()
   runSetup = =>
