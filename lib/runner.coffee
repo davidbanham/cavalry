@@ -168,7 +168,7 @@ Slave.prototype.spawn = (opts, cb) ->
             repo: repo
             commit: commit
         if err?
-          @processes[id].status = 'stopped'
+          @processes[id].status = 'stopped' if @processes[id]
           return cb {}
         @emit "setupComplete", {stdout: stdout, stderr: stderr},
           slave: @slaveId
