@@ -77,6 +77,7 @@ Slave.prototype.spawn = (opts, cb) ->
                 id: id
                 repo: repo
                 commit: commit
+              return cb {}
             if !complete
               @emitErr "error", new Error('checkout incomplete'),
                 slave: @slaveId
@@ -179,8 +180,8 @@ Slave.prototype.deploy = (opts, cb) =>
   gitter.deploy innerOpts, (err) ->
     return cb err if err
     gitter.check innerOpts, (err, complete) ->
-      cb err if err
-      cb new Error('checkout incomplete') if !complete
+      return cb err if err
+      return cb new Error('checkout incomplete') if !complete
       cb null
 
 Slave.prototype.stop = (ids) ->
