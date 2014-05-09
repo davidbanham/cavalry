@@ -161,27 +161,11 @@ Slave.prototype.respawn = (opts, dir, id) ->
 Slave.prototype.error_handler = (procInfo, opts, dir) ->
   id = procInfo.id
   return (err) =>
-    #If it's an ENOENT, try fetching the repo from the master
-    if err.code is "ENOENT"
-      innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
-      gitter.deploy innerOpts, (err) =>
-        if err?
-          return @emitErr "error", err, procInfo
-          @processes[id].status = 'stopped' if @processes[id]
-        gitter.check innerOpts, (err, complete) =>
-          if err?
-            return @emitErr "error", err, procInfo
-            @processes[id].status = 'stopped' if @processes[id]
-          if !complete
-            @emitErr "error", new Error('checkout incomplete'), procInfo
-            @processes[id].status = 'stopped' if @processes[id]
-          @respawn opts, dir, id
-    else
-      @emitErr "error", err,
-        slave: @slaveId
-        id: id
-        repo: opts.repo
-        commit: opts.commit
+    @emitErr "error", err,
+      slave: @slaveId
+      id: id
+      repo: opts.repo
+      commit: opts.commit
 
 Slave.prototype.exit_handler = (id, opts, dir) ->
   return (code, signal) =>
