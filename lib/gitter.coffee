@@ -4,6 +4,7 @@ fs = require 'fs'
 path = require 'path'
 rimraf = require 'rimraf'
 find = require 'findit'
+git = require 'gift'
 
 throwUnlessExists = (err) ->
   if err?
@@ -28,9 +29,9 @@ Gitter.prototype.fetch = (repo, url, cb) ->
   fetchdir = path.join @repodir, repo
   fs.mkdir fetchdir, (err) ->
     throwUnlessExists err
-    exec "git init", {cwd: fetchdir}, (err) ->
+    git.init fetchdir, (err, repo) ->
       throw err if err?
-      exec "git fetch #{url}", {cwd: fetchdir}, (err) ->
+      repo.remote_fetch url, (err) ->
         if err?
           rimraf fetchdir, ->
             cb err
@@ -59,9 +60,9 @@ Gitter.prototype.deploy = (opts, cb) ->
   innerDeploy = =>
     fs.exists checkoutdir, (exists) =>
       return cb null, false if exists
-      exec "git clone #{targetrepo} #{checkoutdir}", (err) =>
+      git.clone targetrepo, checkoutdir, (err, repo) =>
         return cb err if err?
-        exec "git checkout #{commit}", {cwd: checkoutdir}, (err) =>
+        repo.checkout commit, (errr) =>
           return cb err if err?
           @emit 'deploy',
             repo: name
