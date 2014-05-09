@@ -43,21 +43,12 @@ Slave.prototype.spawn = (opts, cb) ->
     if exists #this will probably only occur in testing
       @runSetup opts, dir, id, cb
     else
-      gitter.deploy deployOpts, (err, actionTaken) =>
+      gitter.deploy_and_check deployOpts, (err, actionTaken) =>
         if err?
           @emitErr "error", err, procInfo
           @processes[id].status = 'stopped' if @processes[id]
           return cb {}
-        gitter.check deployOpts, (err, complete) =>
-          if err?
-            @emitErr "error", err, procInfo
-            @processes[id].status = 'stopped' if @processes[id]
-            return cb {}
-          if !complete
-            @emitErr "error", new Error('checkout incomplete'), procInfo
-            @processes[id].status = 'stopped' if @processes[id]
-            return cb {}
-          @runSetup opts, dir, id, cb
+        @runSetup opts, dir, id, cb
 
 Slave.prototype.runSetup = (opts, dir, id, cb) ->
   procInfo =
@@ -84,12 +75,9 @@ Slave.prototype.runSetup = (opts, dir, id, cb) ->
 
 Slave.prototype.deploy = (opts, cb) =>
   innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
-  gitter.deploy innerOpts, (err) ->
+  gitter.deploy_and_check innerOpts, (err) ->
     return cb err if err
-    gitter.check innerOpts, (err, complete) ->
-      return cb err if err
-      return cb new Error('checkout incomplete') if !complete
-      cb null
+    cb null
 
 Slave.prototype.stop = (ids) ->
   ids = [ ids ] if !Array.isArray(ids)

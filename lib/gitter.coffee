@@ -114,5 +114,13 @@ Gitter.prototype.check = (opts, cb) ->
         return cb new Error('file missing'), false if file_names.indexOf(file.name) < 0
       return cb null, true
 
+Gitter.prototype.deploy_and_check = (opts, cb) ->
+  @deploy opts, (err, actionTaken) =>
+    return cb err if err?
+    @check opts, (err, complete) =>
+      return cb err if err?
+      return cb new Error('checkout incomplete') if !complete
+      return cb null, actionTaken
+
 module.exports = (opts) ->
   new Gitter opts
