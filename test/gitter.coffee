@@ -162,6 +162,21 @@ describe "gitter", ->
         assert.equal complete, false
         done()
 
+  it 'should fail an empty dir', (done) ->
+    name = 'test1'
+    commit = '5efab4b042ca0ef11d9b392412bc7a542aed231d'
+    pid = Math.floor(Math.random() * (1 << 24)).toString(16)
+    checkoutdir = path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+    mkdirp.sync = path.join opts.deploydir, "#{name}.#{pid}.#{commit}"
+    gitter.check
+      name: name
+      commit: commit
+      pid: pid
+    , (err, complete) ->
+      assert.notEqual err, null
+      assert.equal complete, false
+      done()
+
   #it 'should perform under load', (done) ->
   #  @timeout 100000
   #  completed = 0
