@@ -32,39 +32,40 @@ Slave.prototype.spawn = (opts, cb) ->
     pid: id
     name: repo
     commit: commit
+
+  procInfo =
+    slave: @slaveId
+    id: id
+    repo: repo
+    commit: commit
+
   fs.exists dir, (exists) =>
     if exists #this will probably only occur in testing
       @runSetup opts, dir, id, cb
     else
       gitter.deploy deployOpts, (err, actionTaken) =>
         if err?
-          @emitErr "error", err,
-            slave: @slaveId
-            id: id
-            repo: repo
-            commit: commit
+          @emitErr "error", err, procInfo
           @processes[id].status = 'stopped' if @processes[id]
           return cb {}
         gitter.check deployOpts, (err, complete) =>
           if err?
-            @emitErr "error", err,
-              slave: @slaveId
-              id: id
-              repo: repo
-              commit: commit
+            @emitErr "error", err, procInfo
             @processes[id].status = 'stopped' if @processes[id]
             return cb {}
           if !complete
-            @emitErr "error", new Error('checkout incomplete'),
-              slave: @slaveId
-              id: id
-              repo: repo
-              commit: commit
+            @emitErr "error", new Error('checkout incomplete'), procInfo
             @processes[id].status = 'stopped' if @processes[id]
             return cb {}
           @runSetup opts, dir, id, cb
 
 Slave.prototype.runSetup = (opts, dir, id, cb) ->
+  procInfo =
+    slave: @slaveId
+    id: id
+    repo: opts.repo
+    commit: opts.commit
+
   firstSpawn = =>
     @respawn opts, dir, id
     cb @processes[id] if cb?
@@ -72,19 +73,11 @@ Slave.prototype.runSetup = (opts, dir, id, cb) ->
   if opts.setup? and Array.isArray(opts.setup)
     exec opts.setup.join(' '), {cwd: dir, env: @generateEnv(opts.env, opts)}, (err, stdout, stderr) =>
       if err?
-        @emitErr "error", err,
-          slave: @slaveId
-          id: id
-          repo: opts.repo
-          commit: opts.commit
+        @emitErr "error", err, procInfo
       if err?
         @processes[id].status = 'stopped' if @processes[id]
         return cb {}
-      @emit "setupComplete", {stdout: stdout, stderr: stderr},
-        slave: @slaveId
-        id: id
-        repo: opts.repo
-        commit: opts.commit
+      @emit "setupComplete", {stdout: stdout, stderr: stderr}, procInfo
       firstSpawn()
   else
     firstSpawn()
@@ -125,6 +118,12 @@ Slave.prototype.respawn = (opts, dir, id) ->
   cmd = opts.command[0]
   args = opts.command.slice 1
 
+  procInfo =
+    slave: @slaveId
+    id: id
+    repo: opts.repo
+    commit: opts.commit
+
   innerProcess = spawn cmd, args,
     cwd: dir
     env: env
@@ -141,18 +140,10 @@ Slave.prototype.respawn = (opts, dir, id) ->
     slave: @slaveId
 
   innerProcess.stdout.on "data", (buf) =>
-    @emit "stdout", buf,
-      slave: @slaveId
-      id: id
-      repo: opts.repo
-      commit: opts.commit
+    @emit "stdout", buf, procInfo
 
   innerProcess.stderr.on "data", (buf) =>
-    @emit "stderr", buf,
-      slave: @slaveId
-      id: id
-      repo: opts.repo
-      commit: opts.commit
+    @emit "stderr", buf, procInfo
 
   innerProcess.on "error", (err) =>
     #If it's an ENOENT, try fetching the repo from the master
@@ -160,26 +151,14 @@ Slave.prototype.respawn = (opts, dir, id) ->
       innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
       gitter.deploy innerOpts, (err) =>
         if err?
-          return @emitErr "error", err,
-            slave: @slaveId
-            id: id
-            repo: opts.repo
-            commit: opts.commit
+          return @emitErr "error", err, procInfo
           @processes[id].status = 'stopped' if @processes[id]
         gitter.check innerOpts, (err, complete) =>
           if err?
-            return @emitErr "error", err,
-              slave: @slaveId
-              id: id
-              repo: opts.repo
-              commit: opts.commit
+            return @emitErr "error", err, procInfo
             @processes[id].status = 'stopped' if @processes[id]
           if !complete
-            @emitErr "error", new Error('checkout incomplete'),
-              slave: @slaveId
-              id: id
-              repo: opts.repo
-              commit: opts.commit
+            @emitErr "error", new Error('checkout incomplete'), procInfo
             @processes[id].status = 'stopped' if @processes[id]
           @respawn opts, dir, id
     else
