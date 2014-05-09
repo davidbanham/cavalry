@@ -127,6 +127,7 @@ Slave.prototype.respawn = (opts, dir, id) ->
   innerProcess = spawn cmd, args,
     cwd: dir
     env: env
+
   @processes[id] =
     id: id
     status: "running"
@@ -145,7 +146,21 @@ Slave.prototype.respawn = (opts, dir, id) ->
   innerProcess.stderr.on "data", (buf) =>
     @emit "stderr", buf, procInfo
 
-  innerProcess.on "error", (err) =>
+  innerProcess.on "error", @error_handler(procInfo, opts, dir)
+
+  innerProcess.once "exit", @exit_handler(id, opts, dir)
+
+  @emit "spawn",
+    slave: @slaveId
+    id: id
+    repo: opts.repo
+    commit: opts.commit
+    command: opts.command
+    cwd: dir
+
+Slave.prototype.error_handler = (procInfo, opts, dir) ->
+  id = procInfo.id
+  return (err) =>
     #If it's an ENOENT, try fetching the repo from the master
     if err.code is "ENOENT"
       innerOpts = {pid: opts.id, name: opts.repo, commit: opts.commit}
@@ -168,7 +183,8 @@ Slave.prototype.respawn = (opts, dir, id) ->
         repo: opts.repo
         commit: opts.commit
 
-  innerProcess.once "exit", (code, signal) =>
+Slave.prototype.exit_handler = (id, opts, dir) ->
+  return (code, signal) =>
     proc = @processes[id]
     @emit "exit", code, signal,
       slave: @slaveId
@@ -186,14 +202,6 @@ Slave.prototype.respawn = (opts, dir, id) ->
       , opts.debounce or 1000
     else if proc.status is "stopped"
       delete @processes[id]
-
-  @emit "spawn",
-    slave: @slaveId
-    id: id
-    repo: opts.repo
-    commit: opts.commit
-    command: opts.command
-    cwd: dir
 
 Slave.prototype.started = new Date().toISOString()
 
