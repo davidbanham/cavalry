@@ -39,6 +39,14 @@ Slave.prototype.spawn = (opts, cb) ->
     repo: repo
     commit: commit
 
+  @processes[id] =
+    id: id
+    status: 'spawning'
+    repo: repo
+    commit: commit
+    opts: opts
+    cwd: dir
+
   fs.exists dir, (exists) =>
     if exists #this will probably only occur in testing
       @runSetup opts, dir, id, cb
