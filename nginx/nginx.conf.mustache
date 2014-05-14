@@ -11,6 +11,7 @@ http {
     uwsgi_temp_path {{temp_path}}/nginx_temp_uwsgi;
     scgi_temp_path {{temp_path}}/nginx_temp_scgi;
     {{/temp_path}}
+    server_names_hash_bucket_size 64;
     include {{mimePath}};
     default_type application/octet-stream;
     log_format main '$remote_addr - $remote_user [$time_local] $status '
