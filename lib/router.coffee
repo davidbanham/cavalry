@@ -24,8 +24,14 @@ Router = ->
     for name, data of routingTable
 
       options.server ?= []
+
+      if Array.isArray domain
+        domain = data.domain.join ' '
+      else
+        domain = data.domain
+
       server =
-        domain: data.domain
+        domain: domain
         name: name
         directives: []
       if data.directives?
