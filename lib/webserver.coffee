@@ -27,6 +27,10 @@ respondJSONerr = (err, res) ->
   res.writeHead 400
   res.end err
 
+addNewline = (str) ->
+  return str += '\r\n' if str.charAt(str.length - 1) isnt '\n'
+  return str
+
 server.on 'request', (req, res) ->
   res.setHeader "Access-Control-Allow-Origin", "*"
   res.setHeader "Access-Control-Allow-Headers", req.headers["access-control-request-headers"]
@@ -108,9 +112,9 @@ server.on 'request', (req, res) ->
       res.writeHead 200
       res.write "Monitoring #{runner.slaveId}\r\n"
       runner.on "stdout", (buf, info) ->
-        res.write "#{info.repo} #{info.id} - #{buf.toString()}\r\n"
+        res.write "#{info.repo} #{info.id} - #{addNewline buf.toString()}"
       runner.on "stderr", (buf, info) ->
-        res.write "#{info.repo} #{info.id} - #{buf.toString()}\r\n"
+        res.write "#{info.repo} #{info.id} - #{addNewline buf.toString()}"
       runner.on "spawn", (info) ->
         res.write "#{info.repo} #{info.id} spawn\r\n"
       runner.on "stop", (info) ->
@@ -122,7 +126,7 @@ server.on 'request', (req, res) ->
         str += " from signal #{signal}" if signal?
         res.write str+"\r\n"
       runner.on "error", (err, info) ->
-        res.write "#{info.repo} #{info.id} error - #{err.toString()}"
+        res.write "#{info.repo} #{info.id} error - #{addNewline err.toString()}"
       gitter.on "deploy", (info) ->
         res.write "#{info.repo} #{info.commit} deploy\r\n"
     when '/apiVersion'
