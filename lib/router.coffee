@@ -34,6 +34,7 @@ Router = ->
         domain: domain
         name: name
         directives: []
+        client_max_body_size: data.client_max_body_size || '1m'
       if data.directives?
         for directive in data.directives
           server.directives.push {directive: directive}
