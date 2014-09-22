@@ -2,7 +2,7 @@
 
 Cavalry is a way to get git repositories onto machines, then run the code in them. It's heavily inspired by [fleet](https://github.com/substack/fleet) and [propagit](https://github.com/substack/propagit).
 
-Cavalry is designed to work in conjuction with [Rear-Admiral](https://github.com/davidbanham/rear-admiral)
+Cavalry is designed to work in conjuction with [Field Marshal](https://github.com/davidbanham/field-marshal)
 
 [![Build Status](https://travis-ci.org/davidbanham/cavalry.png?branch=master)](https://travis-ci.org/davidbanham/cavalry)
 
