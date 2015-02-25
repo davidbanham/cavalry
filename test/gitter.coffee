@@ -136,7 +136,7 @@ describe "gitter", ->
       pid: pid
     , (err, complete) ->
       assert.notEqual err, null
-      assert.equal err.message.slice(0, -1), 'Command failed: fatal: not a tree object'
+      assert err.message.match 'fatal: not a tree object'
       assert.equal complete, false
       done()
 
