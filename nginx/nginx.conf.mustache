@@ -51,7 +51,7 @@ http {
       {{/directives}}
       listen 7005;
       server_name {{domain}};
-      client_max_body_size {{client_max_body_size}}
+      client_max_body_size {{client_max_body_size}};
       location / {
         proxy_pass http://{{name}};
         proxy_http_version 1.1;
