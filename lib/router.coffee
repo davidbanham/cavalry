@@ -34,10 +34,14 @@ Router = ->
         domain: domain
         name: name
         directives: []
+        location_arguments: []
         client_max_body_size: data.client_max_body_size || '1m'
       if data.directives?
         for directive in data.directives
           server.directives.push {directive: directive}
+      if data.location_arguments?
+        for argument in data.location_arguments
+          server.location_arguments.push {argument: argument}
       options.server.push server
 
       options.upstream ?= []

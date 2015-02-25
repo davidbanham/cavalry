@@ -58,6 +58,9 @@ http {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
+        {{#location_arguments}}
+        {{argument}};
+        {{/location_arguments}}
       }
     }
     {{/server}}
