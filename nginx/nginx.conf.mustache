@@ -40,8 +40,8 @@ http {
         return 200;
         access_log off;
       }
-      location / {
-        return 500;
+      location ~* {
+        return 404;
       }
     }
     {{#server}}
