@@ -46,6 +46,9 @@ http {
     }
     {{#server}}
     server {
+      {{#maintenance}}
+      return 503;
+      {{/maintenance}}
       {{#directives}}
       {{directive}};
       {{/directives}}
