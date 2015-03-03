@@ -36,6 +36,7 @@ Router = ->
         directives: []
         location_arguments: []
         client_max_body_size: data.client_max_body_size || '1m'
+      server.maintenance = data.maintenance
       if data.directives?
         for directive in data.directives
           server.directives.push {directive: directive}
