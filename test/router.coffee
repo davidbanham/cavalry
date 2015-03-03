@@ -55,9 +55,9 @@ describe 'routes', ->
     options = router.buildOpts routingTable
     assert.deepEqual options.server,
       [
-        { domain: 'repo1.example.com', name: 'repo1', directives: [], location_arguments: [], client_max_body_size: '1m' }
-        { domain: 'repo2.example.com', name: 'repo2', directives: [], location_arguments: [], client_max_body_size: '1m' }
-        { domain: 'repo3.example.com', name: 'repo3', directives: [], location_arguments: [], client_max_body_size: '1m' }
+        { domain: 'repo1.example.com', name: 'repo1', directives: [], location_arguments: [], client_max_body_size: '1m', maintenance: undefined }
+        { domain: 'repo2.example.com', name: 'repo2', directives: [], location_arguments: [], client_max_body_size: '1m', maintenance: undefined }
+        { domain: 'repo3.example.com', name: 'repo3', directives: [], location_arguments: [], client_max_body_size: '1m', maintenance: undefined }
       ]
     assert.deepEqual options.upstream,
       [
@@ -97,7 +97,7 @@ describe 'routes', ->
       [
         { domain: 'repo1.example.com', name: 'repo1', directives: [
           {directive: "real_ip_header X-Forwarded-For"}
-        ], location_arguments: [], client_max_body_size: '1m'}
+        ], location_arguments: [], client_max_body_size: '1m', maintenance: undefined}
       ]
     done()
   it "Should include the location arguments in the template", (done) ->
@@ -119,7 +119,7 @@ describe 'routes', ->
       [
         { domain: 'repo1.example.com', name: 'repo1', directives: [], location_arguments: [
           {argument: "proxy_buffering off"}
-        ], client_max_body_size: '1m'}
+        ], client_max_body_size: '1m', maintenance: undefined}
       ]
     done()
   it "Should render the template without throwing an error", (done) ->
