@@ -10,13 +10,14 @@ server.on 'router_ready', ->
   routerReady = true
 
 start = ->
-  checkin.startCheckin()
+  innerStart = ->
+    checkin.startCheckin()
+    server.listen process.env.PORT or 3000
 
   if routerReady
-    server.listen process.env.PORT or 3000
+    innerStart()
   else
-    server.on 'router_ready', ->
-      server.listen process.env.PORT or 3000
+    server.on 'router_ready', innerStart
 
 if opts.create
   start()
