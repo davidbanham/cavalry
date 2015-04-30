@@ -8,6 +8,9 @@ porter = require('../lib/porter')
 router = require('../lib/router')
 util = require ('../lib/util')
 
+router.on 'ready', ->
+  server.emit 'router_ready'
+
 porter.neverTwice = true # Don't return the same port twice
 
 SECRET = process.env.SECRET or "testingpass"

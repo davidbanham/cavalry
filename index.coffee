@@ -4,9 +4,19 @@ cleaner = require './lib/cleaner.coffee'
 util = require './lib/util.coffee'
 opts = util.opter process.argv
 
+routerReady = false
+
+server.on 'router_ready', ->
+  routerReady = true
+
 start = ->
-  server.listen process.env.PORT or 3000
   checkin.startCheckin()
+
+  if routerReady
+    server.listen process.env.PORT or 3000
+  else
+    server.on 'router_ready', ->
+      server.listen process.env.PORT or 3000
 
 if opts.create
   start()
