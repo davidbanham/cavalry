@@ -70,7 +70,7 @@ Slave.prototype.runSetup = (opts, dir, id, cb) ->
     cb @processes[id] if cb?
 
   if opts.setup? and Array.isArray(opts.setup)
-    exec opts.setup.join(' '), {cwd: dir, env: @generateEnv(opts.env, opts)}, (err, stdout, stderr) =>
+    @processes[id].process = exec opts.setup.join(' '), {cwd: dir, env: @generateEnv(opts.env, opts)}, (err, stdout, stderr) =>
       if err?
         @emitErr "error", err, procInfo
       if err?
