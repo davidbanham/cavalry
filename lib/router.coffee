@@ -88,11 +88,17 @@ Router = ->
         return cb()
       else
         stalePid = parseInt(buf.toString())
+        return cb() if !stalePid # In case file is present but empty
         info = spawn 'ps', ['-p', stalePid, '-o', 'comm'] #Check that it's actually an nginx process and not something else
+        calledBack = false
         info.stdout.once 'data', (data) ->
           if data.toString().indexOf('nginx') > -1
             process.kill stalePid
-          cb()
+          cb() unless calledBack
+          calledBack = true
+        info.on 'exit', -> # Handles the case where ps returns no data on stdout
+          cb() unless calledBack
+          calledBack = true
         info.on 'error', (err) ->
           console.error "Err from staleness check", err
   @start = =>
