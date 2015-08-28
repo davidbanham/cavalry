@@ -2,6 +2,7 @@ server = require './lib/webserver.coffee'
 checkin = require('./lib/checkin.coffee')()
 cleaner = require './lib/cleaner.coffee'
 util = require './lib/util.coffee'
+logger = require './lib/logger.coffee'
 opts = util.opter process.argv
 
 routerReady = false

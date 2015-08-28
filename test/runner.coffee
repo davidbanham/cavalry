@@ -5,6 +5,7 @@ rimraf = require 'rimraf'
 testpath = path.resolve '.', 'testrepos'
 deploydir = path.join testpath, 'deploy'
 slave = require('../lib/runner.coffee')
+logger = require('../lib/logger.coffee')
 slave.deploydir = deploydir
 describe 'slave', ->
   specifiedPid = Math.floor(Math.random() * (1 << 24)).toString(16)
@@ -39,12 +40,10 @@ describe 'slave', ->
         fs.unlinkSync touchedFile
         done()
       , 5
-  it 'should not emit an error event if there is no listener', ->
-    slave.emitErr 'error', new Error 'test error'
   it 'should emit an error event if there is a listener', (done) ->
     slave.on 'error', (err) ->
       done assert.equal err.message, 'test error'
-    slave.emitErr 'error', new Error 'test error'
+    slave.emitErr 'error', new Error('test error'), {}
   it 'should expose the time it was started', ->
     assert slave.started
 
