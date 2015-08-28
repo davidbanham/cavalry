@@ -5,7 +5,7 @@
   "main": "index.coffee",
   "bin": "./index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -R spec --compilers coffee:coffee-script"
+    "test": "./node_modules/.bin/mocha -R spec --compilers coffee:coffee-script/register"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "mkdirp": "~0.5.0"
   },
   "dependencies": {
-    "coffee-script": "~1.6.3",
+    "coffee-script": "^1.9.3",
     "findit": "~1.2.0",
     "gift": "^0.6.0",
     "mu2": "~0.5.19",
