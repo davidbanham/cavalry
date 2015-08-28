@@ -36,6 +36,7 @@ Cleaner.prototype.clean = (cb) ->
 
 Cleaner.prototype.rmIfDir = (dir, cb) ->
   fs.stat dir, (err, stats) =>
+    return console.error err if err
     return cb null if !stats.isDirectory()
     rimraf dir, (err) =>
       @emit 'pruned directory', dir unless err?
