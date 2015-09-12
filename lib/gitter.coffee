@@ -8,7 +8,11 @@ git = require 'gift'
 
 throwUnlessExists = (err) ->
   if err?
-    throw err unless err.toString().split(' ')[1] is "EEXIST,"
+    exists = false
+    errFragment = err.toString().split(' ')[1]
+    exists = true if errFragment is "EEXIST," # Pre node 4.0
+    exists = true if errFragment is "EEXIST:" # node 4.0
+    throw err unless exists
 
 Gitter = (opts={}) ->
   base = opts.basedir or process.cwd()
